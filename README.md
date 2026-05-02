@@ -1,17 +1,9 @@
 # alarm_play
 
-A new Flutter project.
+Este nuevo proyecto va a permitir al usuario crear alarmas a pedido. Y disfrutar con estas de su play list.
+Ya no despertaras cada mañana con el mismo sonido monotono. Ahora te sorprenderas al despertar con un nuevo sonido cada mañana.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Este proyecto utiliza play list precargadas y permite crear nuevas de acuerdo a los archivos guardados en tu telefono.
+Integrasion con Spotify y YouTube music coming soon.
