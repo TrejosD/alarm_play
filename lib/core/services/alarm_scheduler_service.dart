@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/standalone.dart' as tz;
 
 import '../../data/entities/entities.dart';
 
@@ -8,32 +9,37 @@ class AlarmSchedulerService {
   AlarmSchedulerService(this.notifications);
 
   Future<void> schedule(Alarm alarm) async {
-    final scheduleDate = _nextInstance(alarm);
+    if (alarm.nextTrigger == null) return;
+
 // todo importar timeZone local notifications as TZ
     await notifications.zonedSchedule(
       id: alarm.id,
       title: 'Alarm',
       body: 'Wake up',
-      scheduledDate: scheduleDate,
-      notificationDetails: _details(),
+      scheduledDate: tz.TZDateTime.from(alarm.nextTrigger!, tz.local),
+      notificationDetails: NotificationDetails(
+          android: AndroidNotificationDetails('alarm_channel', 'alarms',
+              importance: Importance.max,
+              priority: Priority.high,
+              fullScreenIntent: true)),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: null,
     );
   }
 
-  // todo crear metodo _details
+  // todo terminar de cargar el timezone package
 
   Future<void> cancel(int id) async {
     await notifications.cancel(id: id);
   }
 
-  DateTime _nextInstance(Alarm alarm) {
-    final now = DateTime.now();
-    var scheduled =
-        DateTime(now.year, now.month, now.day, alarm.hour, alarm.minute);
-    if (scheduled.isBefore(now)) {
-      scheduled = scheduled.add(Duration(days: 1));
-    }
-    return scheduled;
-  }
+  // DateTime _nextInstance(Alarm alarm) {
+  //   final now = DateTime.now();
+  //   var scheduled =
+  //       DateTime(now.year, now.month, now.day, alarm.hour, alarm.minute);
+  //   if (scheduled.isBefore(now)) {
+  //     scheduled = scheduled.add(Duration(days: 1));
+  //   }
+  //   return scheduled;
+  // }
 }

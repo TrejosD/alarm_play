@@ -1,23 +1,53 @@
+import 'package:alarm_play/core/providers/alarm_provider.dart';
 import 'package:alarm_play/presentations/widgets/alarm_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final alarmAsync = ref.watch(alarmsProvider);
     return Scaffold(
       appBar: AppBar(title: Text('Alarm Play')),
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          // todo este item builder crea la X cantidad de cards de acuerdo a alarmas tiene almacenadas
-          return AlarmCard();
-        },
-      ),
+      body: alarmAsync.when(
+          data: (alarms) {
+            if (alarms.isEmpty) {
+              return Center(
+                child: Text('No alarms'),
+              );
+            }
+            return ListView.builder(
+              itemCount: alarms.length,
+              itemBuilder: (context, index) {
+                return AlarmCard();
+                // todo finalizar el AlarmCard
+              },
+            );
+          },
+          error: (e, _) => Center(
+                child: Text('Error ${e.toString()}'),
+              ),
+          loading: () => Center(child: CircularProgressIndicator())),
       floatingActionButton: FloatingActionButton(
+        // todo create alarm metod and Screen
         onPressed: () {},
         child: Icon(Icons.add_alarm_rounded),
       ),
     );
   }
+
+  // estos metodos son la forma de usar el schedule alarm y el cancel alarm metiante el alarmSchedulerProvider.
+  // se instancia el provider en un objeto y con notacion de punto se utlizan sus metodos
+
+//   Future<void> scheduleAlarm(Alarm alarm) async {
+//   final scheduler = ref.read(alarmSchedulerProvider);
+//   await scheduler.schedule(alarm);
+// }
+
+// Future<void> cancelAlarm(int id) async {
+//   final scheduler = ref.read(alarmSchedulerProvider);
+//   await scheduler.cancel(id);
+// }
 }
