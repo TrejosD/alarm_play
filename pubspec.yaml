@@ -19,7 +19,8 @@ publish_to: "none" # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.11.5
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.16.0"
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -28,17 +29,25 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  android_alarm_manager_plus: ^5.0.0
   cupertino_icons: ^1.0.8
+  file_picker: ^11.0.2
   flutter:
     sdk: flutter
-  flutter_riverpod: ^3.3.1
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
+  flutter_local_notifications: ^21.0.0
+  flutter_riverpod: ^2.6.1
+  isar: 3.1.0+1
+  isar_flutter_libs: 3.1.0+1
+  just_audio: ^0.10.5
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_test:
     sdk: flutter
+  isar_generator: ^3.1.0+1
+  build_runner: ^2.4.13
+  analyzer: ^5.13.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -7,3 +7,9 @@ Ya no despertaras cada mañana con el mismo sonido monotono. Ahora te sorprender
 
 Este proyecto utiliza play list precargadas y permite crear nuevas de acuerdo a los archivos guardados en tu telefono.
 Integrasion con Spotify y YouTube music coming soon.
+
+### Cambios en local-DB
+
+```
+dart run build_runner build
+```

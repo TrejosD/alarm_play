@@ -1,0 +1,76 @@
+import 'package:alarm_play/core/db/isar_service.dart';
+import 'package:alarm_play/data/entities/entities.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:isar/isar.dart';
+
+final alarmControllerProvider = Provider<AlarmController>((ref) {
+  return AlarmController(ref);
+});
+
+class AlarmController {
+  final Ref ref;
+  final isar = IsarService.instance;
+
+  AlarmController(this.ref);
+
+  Future<void> createAlarm(Alarm alarm) async {
+    alarm.updateNextTrigger();
+    await isar.writeTxn(() async {
+      await isar.alarms.put(alarm);
+    });
+    if (alarm.isActive) {
+      await scheduleAlarm(alarm);
+    }
+  }
+
+  Future<void> updateAlarm(Alarm alarm) async {
+    alarm.updateNextTrigger();
+    await isar.writeTxn(() async {
+      await isar.alarms.put(alarm);
+    });
+
+    if (alarm.isActive) {
+      await cancelAlarm(alarm.id);
+      await scheduleAlarm(alarm);
+    }
+  }
+
+  Future<void> deleteAlarm(Id id) async {
+    await cancelAlarm(id);
+    await isar.writeTxn(() async {
+      await isar.alarms.delete(id);
+    });
+  }
+
+  Future<void> toggleAlarm(Alarm alarm) async {
+    alarm.isActive = !alarm.isActive;
+    if (alarm.isActive) {
+      alarm.updateNextTrigger();
+    }
+    await isar.writeTxn(() async {
+      await isar.alarms.put(alarm);
+    });
+    if (alarm.isActive) {
+      await scheduleAlarm(alarm);
+    } else {
+      await cancelAlarm(alarm.id);
+    }
+  }
+
+  Future<void> onAlarmTriggered(Alarm alarm) async {
+    if (alarm.repeatDays.isEmpty) {
+      // una vez
+      alarm.isActive = false;
+    } else {
+      // calcular siguiente
+      alarm.calculateNextTrigger();
+      await scheduleAlarm(alarm);
+    }
+    await isar.writeTxn(() async {
+      await isar.alarms.put(alarm);
+    });
+  }
+
+  Future<void> scheduleAlarm(Alarm alarm) async {}
+  Future<void> cancelAlarm(int id) async {}
+}

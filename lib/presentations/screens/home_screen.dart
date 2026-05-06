@@ -7,11 +7,16 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text('Alarm Play')),
       body: ListView.builder(
         itemBuilder: (context, index) {
           // todo este item builder crea la X cantidad de cards de acuerdo a alarmas tiene almacenadas
           return AlarmCard();
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: Icon(Icons.add_alarm_rounded),
       ),
     );
   }
