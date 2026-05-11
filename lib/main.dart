@@ -1,4 +1,5 @@
 import 'package:alarm_play/core/db/isar_service.dart';
+import 'package:alarm_play/core/services/time_zone_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,12 +7,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await IsarService.init();
+  await TimeZoneService.init();
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.example.alarm_play',
+    androidNotificationChannelName: 'alarm_audio',
+    androidNotificationOngoing: true,
+  );
   final notifications = FlutterLocalNotificationsPlugin();
 
   await notifications.initialize(
     settings: InitializationSettings(
         android: AndroidInitializationSettings('app_icon')),
-    onDidReceiveNotificationResponse: (response) {
+    onDidReceiveNotificationResponse: (response) async {
       final alarmId = int.parse(response.payload!);
 // todo metodo para abrir la AlarmScreen. Esta va a solicitar el alarmId
       // abrir pantalla alarma

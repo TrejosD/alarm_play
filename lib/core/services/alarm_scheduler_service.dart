@@ -1,5 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/standalone.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 import '../../data/entities/entities.dart';
 
@@ -10,8 +10,6 @@ class AlarmSchedulerService {
 
   Future<void> schedule(Alarm alarm) async {
     if (alarm.nextTrigger == null) return;
-
-// todo importar timeZone local notifications as TZ
     await notifications.zonedSchedule(
       id: alarm.id,
       title: 'Alarm',
@@ -21,13 +19,13 @@ class AlarmSchedulerService {
           android: AndroidNotificationDetails('alarm_channel', 'alarms',
               importance: Importance.max,
               priority: Priority.high,
-              fullScreenIntent: true)),
+              fullScreenIntent: true,
+              category: AndroidNotificationCategory.alarm,
+              visibility: NotificationVisibility.public)),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: null,
     );
   }
-
-  // todo terminar de cargar el timezone package
 
   Future<void> cancel(int id) async {
     await notifications.cancel(id: id);

@@ -12,7 +12,9 @@ class AlarmCard extends ConsumerWidget {
   Widget build(BuildContext context, ref) {
     return ListTile(
       leading: IconButton(
-        onPressed: () {},
+        onPressed: () {
+          ref.read(alarmControllerProvider).deleteAlarm(alarm.id);
+        },
         icon: Icon(Icons.delete_forever_outlined),
       ),
       subtitle: Column(
@@ -23,7 +25,7 @@ class AlarmCard extends ConsumerWidget {
       ),
       title: Row(
         children: [
-          Text('06:00 am'),
+          Text('${alarm.hour} : ${alarm.minute.toString().padLeft(2, '0')}'),
           Switch(
               value: alarm.isActive,
               onChanged: (_) {

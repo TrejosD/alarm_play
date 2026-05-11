@@ -12,6 +12,12 @@ Future<void> resyncAllAlarms() async {
   }
 }
 
+llamar al iniciar app / permisos
+
+Future<void> requestExactAlarmPermission() async {
+  await Permission.scheduleExactAlarm.request();
+}
+
 resolver URL / assets
 
 AudioSource buildSource(Track track) {
