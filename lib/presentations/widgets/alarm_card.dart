@@ -1,12 +1,15 @@
+import 'package:alarm_play/core/controllers/alarm_controller_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AlarmCard extends StatelessWidget {
-  const AlarmCard({super.key});
+import '../../data/entities/entities.dart';
+
+class AlarmCard extends ConsumerWidget {
+  final Alarm alarm;
+  const AlarmCard({super.key, required this.alarm});
 
   @override
-  Widget build(BuildContext context) {
-    final bool isActived = false;
-    // todo crear el getter para esta variable y metodo
+  Widget build(BuildContext context, ref) {
     return ListTile(
       leading: IconButton(
         onPressed: () {},
@@ -21,7 +24,11 @@ class AlarmCard extends StatelessWidget {
       title: Row(
         children: [
           Text('06:00 am'),
-          Switch(value: isActived, onChanged: null),
+          Switch(
+              value: alarm.isActive,
+              onChanged: (_) {
+                ref.read(alarmControllerProvider).toggleAlarm(alarm);
+              }),
         ],
       ),
     );

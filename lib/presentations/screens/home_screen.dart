@@ -21,8 +21,9 @@ class HomeScreen extends ConsumerWidget {
             return ListView.builder(
               itemCount: alarms.length,
               itemBuilder: (context, index) {
-                return AlarmCard();
-                // todo finalizar el AlarmCard
+                return AlarmCard(
+                  alarm: alarms[index],
+                );
               },
             );
           },
