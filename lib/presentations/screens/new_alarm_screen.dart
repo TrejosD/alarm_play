@@ -76,8 +76,8 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
           // forma de seleccionar hora DONE
           // playList selector
           // repetir
-          // vibrar al sonar SWITCH default true
-          // eliminar despues de sonar SWITCH default false
+          // vibrar al sonar SWITCH default true Done
+          // eliminar despues de sonar SWITCH default false DONE
         ],
       ),
     );
