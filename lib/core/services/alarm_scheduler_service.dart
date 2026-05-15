@@ -13,7 +13,7 @@ class AlarmSchedulerService {
     await notifications.zonedSchedule(
       id: alarm.id,
       title: 'Alarm',
-      body: 'Wake up',
+      body: alarm.label ?? 'Wake up',
       scheduledDate: tz.TZDateTime.from(alarm.nextTrigger!, tz.local),
       notificationDetails: NotificationDetails(
           android: AndroidNotificationDetails('alarm_channel', 'alarms',
@@ -21,7 +21,9 @@ class AlarmSchedulerService {
               priority: Priority.high,
               fullScreenIntent: true,
               category: AndroidNotificationCategory.alarm,
+              playSound: false,
               visibility: NotificationVisibility.public)),
+      payload: alarm.id.toString(),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: null,
     );
