@@ -1,8 +1,12 @@
 import 'package:alarm_play/core/db/isar_service.dart';
+import 'package:alarm_play/core/navigation/app_router.dart';
+import 'package:alarm_play/core/services/notification_service.dart';
 import 'package:alarm_play/core/services/time_zone_service.dart';
+import 'package:alarm_play/presentations/screens/alarm_ringing_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,16 +18,11 @@ void main() async {
     androidNotificationOngoing: true,
   );
   final notifications = FlutterLocalNotificationsPlugin();
-
-  await notifications.initialize(
-    settings: InitializationSettings(
-        android: AndroidInitializationSettings('app_icon')),
-    onDidReceiveNotificationResponse: (response) async {
-      final alarmId = int.parse(response.payload!);
-// todo metodo para abrir la AlarmScreen. Esta va a solicitar el alarmId
-      // abrir pantalla alarma
-    },
-  );
+  final notificationService = NotificationService(notifications);
+  await notificationService.init(onAlarmTriggered: (alarmId) {
+    navigatorKey.currentState?.push(MaterialPageRoute(
+        builder: (_) => AlarmRingingScreen(alarmId: alarmId)));
+  });
   runApp(ProviderScope(child: MyApp()));
 }
 
@@ -34,6 +33,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
