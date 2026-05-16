@@ -23,6 +23,26 @@ class AlarmController {
     }
   }
 
+  Future<void> onAlarmFinished(Alarm alarm) async {
+    // sonar una vez & delete
+    if (alarm.playOnce) {
+      await deleteAlarm(alarm.id);
+      return;
+    }
+    // sonar y desactiva
+    if (alarm.repeatDays.isEmpty) {
+      alarm.isActive = false;
+    }
+    // sonar y programar siguiente
+    else {
+      alarm.updateNextTrigger();
+      await scheduleAlarm(alarm);
+    }
+    await isar.writeTxn(() async {
+      await isar.alarms.put(alarm);
+    });
+  }
+
   Future<void> updateAlarm(Alarm alarm) async {
     alarm.updateNextTrigger();
     await isar.writeTxn(() async {

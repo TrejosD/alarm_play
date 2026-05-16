@@ -15,11 +15,16 @@ class Alarm {
 
   late List<int> repeatDays; // 1-7
 
-  late int playlistId;
+  String assetPath = 'assets/audiofiles/alarm.mp3';
+
+  // late int playlistId;
   @enumerated
   late PlaybackMode playbackMode;
 
   late bool isActive;
+
+  bool playOnce = false;
+  bool vibrateEnabled = true;
 
   double volume = 1.0;
   bool ascendingVolume = false;
