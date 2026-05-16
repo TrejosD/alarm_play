@@ -57,7 +57,9 @@ class AlarmController {
     }
   }
 
-  Future<void> onAlarmTriggered(Alarm alarm) async {
+  Future<void> onAlarmTriggered(Id alarmId) async {
+    final alarm = await isar.alarms.get(alarmId);
+    if (alarm == null) return;
     if (alarm.repeatDays.isEmpty) {
       // una vez
       alarm.isActive = false;
