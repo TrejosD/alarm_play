@@ -38,7 +38,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
 
     await audio.startAlarm(
         assetPath: 'assets/audiofiles/maestro.mp3', volume: alarm.volume);
-    if (alarm.vibrationEnabled) {
+    if (alarm.vibrateEnabled) {
       await ref.read(vibrationServiceProvider).start();
     }
     setState(() {});

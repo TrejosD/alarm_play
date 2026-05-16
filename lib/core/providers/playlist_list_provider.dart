@@ -1,5 +1,3 @@
-import '../../data/entities/entities.dart';
-
-final playlistProvider = StreamProvider<List<Playlist>>((ref) {
-  return isar.playlistModels.where().watch(fireImmediately: true);
-});
+// final playlistProvider = StreamProvider<List<Playlist>>((ref) {
+//   return isar.playlistModels.where().watch(fireImmediately: true);
+// });

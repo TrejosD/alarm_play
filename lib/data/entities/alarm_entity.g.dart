@@ -22,74 +22,84 @@ const AlarmSchema = CollectionSchema(
       name: r'ascendingVolume',
       type: IsarType.bool,
     ),
-    r'autoStop': PropertySchema(
+    r'assetPath': PropertySchema(
       id: 1,
+      name: r'assetPath',
+      type: IsarType.string,
+    ),
+    r'autoStop': PropertySchema(
+      id: 2,
       name: r'autoStop',
       type: IsarType.bool,
     ),
     r'autoStopAfterMinutes': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'autoStopAfterMinutes',
       type: IsarType.long,
     ),
     r'createdAt': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'createdAt',
       type: IsarType.dateTime,
     ),
     r'hour': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'hour',
       type: IsarType.long,
     ),
     r'isActive': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'isActive',
       type: IsarType.bool,
     ),
     r'label': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'label',
       type: IsarType.string,
     ),
     r'minute': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'minute',
       type: IsarType.long,
     ),
     r'nextTrigger': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'nextTrigger',
       type: IsarType.dateTime,
     ),
+    r'playOnce': PropertySchema(
+      id: 10,
+      name: r'playOnce',
+      type: IsarType.bool,
+    ),
     r'playbackMode': PropertySchema(
-      id: 9,
+      id: 11,
       name: r'playbackMode',
       type: IsarType.byte,
       enumMap: _AlarmplaybackModeEnumValueMap,
     ),
-    r'playlistId': PropertySchema(
-      id: 10,
-      name: r'playlistId',
-      type: IsarType.long,
-    ),
     r'repeatDays': PropertySchema(
-      id: 11,
+      id: 12,
       name: r'repeatDays',
       type: IsarType.longList,
     ),
     r'snoozeMinutes': PropertySchema(
-      id: 12,
+      id: 13,
       name: r'snoozeMinutes',
       type: IsarType.long,
     ),
     r'updatedAt': PropertySchema(
-      id: 13,
+      id: 14,
       name: r'updatedAt',
       type: IsarType.dateTime,
     ),
+    r'vibrateEnabled': PropertySchema(
+      id: 15,
+      name: r'vibrateEnabled',
+      type: IsarType.bool,
+    ),
     r'volume': PropertySchema(
-      id: 14,
+      id: 16,
       name: r'volume',
       type: IsarType.double,
     )
@@ -114,6 +124,7 @@ int _alarmEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  bytesCount += 3 + object.assetPath.length * 3;
   {
     final value = object.label;
     if (value != null) {
@@ -131,20 +142,22 @@ void _alarmSerialize(
   Map<Type, List<int>> allOffsets,
 ) {
   writer.writeBool(offsets[0], object.ascendingVolume);
-  writer.writeBool(offsets[1], object.autoStop);
-  writer.writeLong(offsets[2], object.autoStopAfterMinutes);
-  writer.writeDateTime(offsets[3], object.createdAt);
-  writer.writeLong(offsets[4], object.hour);
-  writer.writeBool(offsets[5], object.isActive);
-  writer.writeString(offsets[6], object.label);
-  writer.writeLong(offsets[7], object.minute);
-  writer.writeDateTime(offsets[8], object.nextTrigger);
-  writer.writeByte(offsets[9], object.playbackMode.index);
-  writer.writeLong(offsets[10], object.playlistId);
-  writer.writeLongList(offsets[11], object.repeatDays);
-  writer.writeLong(offsets[12], object.snoozeMinutes);
-  writer.writeDateTime(offsets[13], object.updatedAt);
-  writer.writeDouble(offsets[14], object.volume);
+  writer.writeString(offsets[1], object.assetPath);
+  writer.writeBool(offsets[2], object.autoStop);
+  writer.writeLong(offsets[3], object.autoStopAfterMinutes);
+  writer.writeDateTime(offsets[4], object.createdAt);
+  writer.writeLong(offsets[5], object.hour);
+  writer.writeBool(offsets[6], object.isActive);
+  writer.writeString(offsets[7], object.label);
+  writer.writeLong(offsets[8], object.minute);
+  writer.writeDateTime(offsets[9], object.nextTrigger);
+  writer.writeBool(offsets[10], object.playOnce);
+  writer.writeByte(offsets[11], object.playbackMode.index);
+  writer.writeLongList(offsets[12], object.repeatDays);
+  writer.writeLong(offsets[13], object.snoozeMinutes);
+  writer.writeDateTime(offsets[14], object.updatedAt);
+  writer.writeBool(offsets[15], object.vibrateEnabled);
+  writer.writeDouble(offsets[16], object.volume);
 }
 
 Alarm _alarmDeserialize(
@@ -155,23 +168,25 @@ Alarm _alarmDeserialize(
 ) {
   final object = Alarm();
   object.ascendingVolume = reader.readBool(offsets[0]);
-  object.autoStop = reader.readBool(offsets[1]);
-  object.autoStopAfterMinutes = reader.readLong(offsets[2]);
-  object.createdAt = reader.readDateTime(offsets[3]);
-  object.hour = reader.readLong(offsets[4]);
+  object.assetPath = reader.readString(offsets[1]);
+  object.autoStop = reader.readBool(offsets[2]);
+  object.autoStopAfterMinutes = reader.readLong(offsets[3]);
+  object.createdAt = reader.readDateTime(offsets[4]);
+  object.hour = reader.readLong(offsets[5]);
   object.id = id;
-  object.isActive = reader.readBool(offsets[5]);
-  object.label = reader.readStringOrNull(offsets[6]);
-  object.minute = reader.readLong(offsets[7]);
-  object.nextTrigger = reader.readDateTimeOrNull(offsets[8]);
+  object.isActive = reader.readBool(offsets[6]);
+  object.label = reader.readStringOrNull(offsets[7]);
+  object.minute = reader.readLong(offsets[8]);
+  object.nextTrigger = reader.readDateTimeOrNull(offsets[9]);
+  object.playOnce = reader.readBool(offsets[10]);
   object.playbackMode =
-      _AlarmplaybackModeValueEnumMap[reader.readByteOrNull(offsets[9])] ??
+      _AlarmplaybackModeValueEnumMap[reader.readByteOrNull(offsets[11])] ??
           PlaybackMode.shuffle;
-  object.playlistId = reader.readLong(offsets[10]);
-  object.repeatDays = reader.readLongList(offsets[11]) ?? [];
-  object.snoozeMinutes = reader.readLong(offsets[12]);
-  object.updatedAt = reader.readDateTime(offsets[13]);
-  object.volume = reader.readDouble(offsets[14]);
+  object.repeatDays = reader.readLongList(offsets[12]) ?? [];
+  object.snoozeMinutes = reader.readLong(offsets[13]);
+  object.updatedAt = reader.readDateTime(offsets[14]);
+  object.vibrateEnabled = reader.readBool(offsets[15]);
+  object.volume = reader.readDouble(offsets[16]);
   return object;
 }
 
@@ -185,33 +200,37 @@ P _alarmDeserializeProp<P>(
     case 0:
       return (reader.readBool(offset)) as P;
     case 1:
-      return (reader.readBool(offset)) as P;
+      return (reader.readString(offset)) as P;
     case 2:
-      return (reader.readLong(offset)) as P;
-    case 3:
-      return (reader.readDateTime(offset)) as P;
-    case 4:
-      return (reader.readLong(offset)) as P;
-    case 5:
       return (reader.readBool(offset)) as P;
-    case 6:
-      return (reader.readStringOrNull(offset)) as P;
-    case 7:
+    case 3:
       return (reader.readLong(offset)) as P;
+    case 4:
+      return (reader.readDateTime(offset)) as P;
+    case 5:
+      return (reader.readLong(offset)) as P;
+    case 6:
+      return (reader.readBool(offset)) as P;
+    case 7:
+      return (reader.readStringOrNull(offset)) as P;
     case 8:
-      return (reader.readDateTimeOrNull(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 9:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 10:
+      return (reader.readBool(offset)) as P;
+    case 11:
       return (_AlarmplaybackModeValueEnumMap[reader.readByteOrNull(offset)] ??
           PlaybackMode.shuffle) as P;
-    case 10:
-      return (reader.readLong(offset)) as P;
-    case 11:
-      return (reader.readLongList(offset) ?? []) as P;
     case 12:
-      return (reader.readLong(offset)) as P;
+      return (reader.readLongList(offset) ?? []) as P;
     case 13:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 14:
+      return (reader.readDateTime(offset)) as P;
+    case 15:
+      return (reader.readBool(offset)) as P;
+    case 16:
       return (reader.readDouble(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -323,6 +342,136 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'ascendingVolume',
         value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> assetPathEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'assetPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> assetPathGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'assetPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> assetPathLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'assetPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> assetPathBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'assetPath',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> assetPathStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'assetPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> assetPathEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'assetPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> assetPathContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'assetPath',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> assetPathMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'assetPath',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> assetPathIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'assetPath',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> assetPathIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'assetPath',
+        value: '',
       ));
     });
   }
@@ -824,6 +973,16 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> playOnceEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'playOnce',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QAfterFilterCondition> playbackModeEqualTo(
       PlaybackMode value) {
     return QueryBuilder.apply(this, (query) {
@@ -869,59 +1028,6 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'playbackMode',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> playlistIdEqualTo(
-      int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'playlistId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> playlistIdGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'playlistId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> playlistIdLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'playlistId',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> playlistIdBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'playlistId',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1174,6 +1280,16 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> vibrateEnabledEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'vibrateEnabled',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QAfterFilterCondition> volumeEqualTo(
     double value, {
     double epsilon = Query.epsilon,
@@ -1251,6 +1367,18 @@ extension AlarmQuerySortBy on QueryBuilder<Alarm, Alarm, QSortBy> {
   QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByAscendingVolumeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ascendingVolume', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByAssetPath() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assetPath', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByAssetPathDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assetPath', Sort.desc);
     });
   }
 
@@ -1350,6 +1478,18 @@ extension AlarmQuerySortBy on QueryBuilder<Alarm, Alarm, QSortBy> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByPlayOnce() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'playOnce', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByPlayOnceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'playOnce', Sort.desc);
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByPlaybackMode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'playbackMode', Sort.asc);
@@ -1359,18 +1499,6 @@ extension AlarmQuerySortBy on QueryBuilder<Alarm, Alarm, QSortBy> {
   QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByPlaybackModeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'playbackMode', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByPlaylistId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'playlistId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByPlaylistIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'playlistId', Sort.desc);
     });
   }
 
@@ -1398,6 +1526,18 @@ extension AlarmQuerySortBy on QueryBuilder<Alarm, Alarm, QSortBy> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByVibrateEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vibrateEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByVibrateEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vibrateEnabled', Sort.desc);
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QAfterSortBy> sortByVolume() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'volume', Sort.asc);
@@ -1421,6 +1561,18 @@ extension AlarmQuerySortThenBy on QueryBuilder<Alarm, Alarm, QSortThenBy> {
   QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByAscendingVolumeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'ascendingVolume', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByAssetPath() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assetPath', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByAssetPathDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'assetPath', Sort.desc);
     });
   }
 
@@ -1532,6 +1684,18 @@ extension AlarmQuerySortThenBy on QueryBuilder<Alarm, Alarm, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByPlayOnce() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'playOnce', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByPlayOnceDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'playOnce', Sort.desc);
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByPlaybackMode() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'playbackMode', Sort.asc);
@@ -1541,18 +1705,6 @@ extension AlarmQuerySortThenBy on QueryBuilder<Alarm, Alarm, QSortThenBy> {
   QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByPlaybackModeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'playbackMode', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByPlaylistId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'playlistId', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByPlaylistIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'playlistId', Sort.desc);
     });
   }
 
@@ -1580,6 +1732,18 @@ extension AlarmQuerySortThenBy on QueryBuilder<Alarm, Alarm, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByVibrateEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vibrateEnabled', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByVibrateEnabledDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'vibrateEnabled', Sort.desc);
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QAfterSortBy> thenByVolume() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'volume', Sort.asc);
@@ -1597,6 +1761,13 @@ extension AlarmQueryWhereDistinct on QueryBuilder<Alarm, Alarm, QDistinct> {
   QueryBuilder<Alarm, Alarm, QDistinct> distinctByAscendingVolume() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'ascendingVolume');
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QDistinct> distinctByAssetPath(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'assetPath', caseSensitive: caseSensitive);
     });
   }
 
@@ -1649,15 +1820,15 @@ extension AlarmQueryWhereDistinct on QueryBuilder<Alarm, Alarm, QDistinct> {
     });
   }
 
-  QueryBuilder<Alarm, Alarm, QDistinct> distinctByPlaybackMode() {
+  QueryBuilder<Alarm, Alarm, QDistinct> distinctByPlayOnce() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'playbackMode');
+      return query.addDistinctBy(r'playOnce');
     });
   }
 
-  QueryBuilder<Alarm, Alarm, QDistinct> distinctByPlaylistId() {
+  QueryBuilder<Alarm, Alarm, QDistinct> distinctByPlaybackMode() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'playlistId');
+      return query.addDistinctBy(r'playbackMode');
     });
   }
 
@@ -1679,6 +1850,12 @@ extension AlarmQueryWhereDistinct on QueryBuilder<Alarm, Alarm, QDistinct> {
     });
   }
 
+  QueryBuilder<Alarm, Alarm, QDistinct> distinctByVibrateEnabled() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'vibrateEnabled');
+    });
+  }
+
   QueryBuilder<Alarm, Alarm, QDistinct> distinctByVolume() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'volume');
@@ -1696,6 +1873,12 @@ extension AlarmQueryProperty on QueryBuilder<Alarm, Alarm, QQueryProperty> {
   QueryBuilder<Alarm, bool, QQueryOperations> ascendingVolumeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'ascendingVolume');
+    });
+  }
+
+  QueryBuilder<Alarm, String, QQueryOperations> assetPathProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'assetPath');
     });
   }
 
@@ -1747,15 +1930,15 @@ extension AlarmQueryProperty on QueryBuilder<Alarm, Alarm, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Alarm, PlaybackMode, QQueryOperations> playbackModeProperty() {
+  QueryBuilder<Alarm, bool, QQueryOperations> playOnceProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'playbackMode');
+      return query.addPropertyName(r'playOnce');
     });
   }
 
-  QueryBuilder<Alarm, int, QQueryOperations> playlistIdProperty() {
+  QueryBuilder<Alarm, PlaybackMode, QQueryOperations> playbackModeProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'playlistId');
+      return query.addPropertyName(r'playbackMode');
     });
   }
 
@@ -1774,6 +1957,12 @@ extension AlarmQueryProperty on QueryBuilder<Alarm, Alarm, QQueryProperty> {
   QueryBuilder<Alarm, DateTime, QQueryOperations> updatedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'updatedAt');
+    });
+  }
+
+  QueryBuilder<Alarm, bool, QQueryOperations> vibrateEnabledProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'vibrateEnabled');
     });
   }
 
