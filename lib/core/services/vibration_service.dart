@@ -1,3 +1,5 @@
+import 'package:vibration/vibration.dart';
+
 class VibrationService {
   Future<void> start() async {
     final hasVibrator = await Vibration.hasVibrator();
