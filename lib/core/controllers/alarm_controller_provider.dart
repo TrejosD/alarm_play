@@ -1,7 +1,8 @@
 import 'package:alarm_play/core/db/isar_service.dart';
-import 'package:alarm_play/data/entities/entities.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
+
+import '../../data/entities/entities.dart';
 
 final alarmControllerProvider = Provider<AlarmController>((ref) {
   return AlarmController(ref);
@@ -55,7 +56,7 @@ class AlarmController {
     }
   }
 
-  Future<void> deleteAlarm(Id id) async {
+  Future<void> deleteAlarm(Id? id) async {
     await cancelAlarm(id);
     await isar.writeTxn(() async {
       await isar.alarms.delete(id);
@@ -94,5 +95,5 @@ class AlarmController {
   }
 
   Future<void> scheduleAlarm(Alarm alarm) async {}
-  Future<void> cancelAlarm(int id) async {}
+  Future<void> cancelAlarm(int? id) async {}
 }

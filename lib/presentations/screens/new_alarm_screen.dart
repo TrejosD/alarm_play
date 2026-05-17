@@ -1,18 +1,21 @@
+import 'package:alarm_play/core/controllers/alarm_controller_provider.dart';
 import 'package:alarm_play/data/entities/alarm_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class NewAlarmScreen extends StatefulWidget {
+class NewAlarmScreen extends ConsumerStatefulWidget {
   final Alarm? alarm;
   const NewAlarmScreen({super.key, this.alarm});
 
   @override
-  State<NewAlarmScreen> createState() => _NewAlarmScreenState();
+  ConsumerState<NewAlarmScreen> createState() => _NewAlarmScreenState();
 }
 
-class _NewAlarmScreenState extends State<NewAlarmScreen> {
+class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
   TimeOfDay? selectedTime;
   bool vibrar = true;
   bool playOnce = false;
+  bool ascendingVolume = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,6 +28,27 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
         actions: [
           IconButton(
               onPressed: () {
+                Alarm newAlarm = Alarm(
+                    id: widget.alarm!.id,
+                    label: widget.alarm!.label,
+                    hour: selectedTime!.hour,
+                    minute: selectedTime!.minute,
+                    ascendingVolume: ascendingVolume,
+                    assetPath: 'assets/audiofiles/alarm.mp3',
+                    autoStop: false,
+                    autoStopAfterMinutes: 20,
+                    createdAt: DateTime.now(),
+                    isActive: true,
+                    nextTrigger: DateTime(1).add(Duration(days: 1)),
+                    playOnce: playOnce,
+                    playbackMode: PlaybackMode.repeatOne,
+                    repeatDays: [1234],
+                    snoozeMinutes: 10,
+                    updatedAt: DateTime.now(),
+                    vibrateEnabled: vibrar,
+                    volume: 100);
+                ref.read(alarmControllerProvider).createAlarm(newAlarm);
+                // widget.alarm puede ser null. Entonces, la newAlarm puede tomar el id del widget.alarm y si no exite no importa isar lo crea.
                 // todo metod crear ACCEPT alarma
               },
               icon: Icon(Icons.check_rounded))
@@ -57,7 +81,9 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
               Switch(
                 value: vibrar,
                 onChanged: (value) {
-                  // todo metodo switch para activar y desactivar la vibracion
+                  setState(() {
+                    vibrar = !vibrar;
+                  });
                 },
               )
             ],
@@ -68,11 +94,14 @@ class _NewAlarmScreenState extends State<NewAlarmScreen> {
               Switch(
                 value: playOnce,
                 onChanged: (value) {
-                  // todo metodo switch para activar y desactivar la alarma se elimine automaticamente
+                  setState(() {
+                    playOnce = !playOnce;
+                  });
                 },
               )
             ],
           )
+          // todo Necesito que este screen cree una Alarm de acuerdo a los inputs. Para guardarla
           // forma de seleccionar hora DONE
           // playList selector
           // repetir

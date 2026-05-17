@@ -4,7 +4,7 @@ part 'alarm_entity.g.dart';
 
 @collection
 class Alarm {
-  Id id = Isar.autoIncrement;
+  Id? id = Isar.autoIncrement;
   String? label;
 
   late int hour;
@@ -34,6 +34,66 @@ class Alarm {
   bool autoStop = false;
   int autoStopAfterMinutes = 30;
   DateTime? nextTrigger;
+
+  Alarm(
+      {required this.id,
+      required this.label,
+      required this.hour,
+      required this.minute,
+      required this.createdAt,
+      required this.updatedAt,
+      required this.repeatDays,
+      required this.assetPath,
+      required this.playbackMode,
+      required this.isActive,
+      required this.playOnce,
+      required this.vibrateEnabled,
+      required this.volume,
+      required this.autoStop,
+      required this.ascendingVolume,
+      required this.snoozeMinutes,
+      required this.autoStopAfterMinutes,
+      required this.nextTrigger});
+
+  Alarm copyWith(
+          {Id? id,
+          String? label,
+          int? hour,
+          int? minute,
+          DateTime? createdAt,
+          DateTime? updatedAt,
+          List<int>? repeatDays,
+          String? assetPath,
+          PlaybackMode? playbackMode,
+          bool? isActive,
+          bool? playOnce,
+          bool? vibrateEnabled,
+          double? volume,
+          bool? ascendingVolume,
+          int? snoozeMinutes,
+          bool? autoStop,
+          int? autoStopAfterMinutes,
+          DateTime? nextTrigger}) =>
+      Alarm(
+          id: id ?? this.id,
+          label: label ?? this.label,
+          hour: hour ?? this.hour,
+          minute: minute ?? this.minute,
+          createdAt: createdAt ?? this.createdAt,
+          updatedAt: updatedAt ?? this.updatedAt,
+          repeatDays: repeatDays ?? this.repeatDays,
+          assetPath: assetPath ?? this.assetPath,
+          playbackMode: playbackMode ?? this.playbackMode,
+          isActive: isActive ?? this.isActive,
+          playOnce: playOnce ?? this.playOnce,
+          vibrateEnabled: vibrateEnabled ?? this.vibrateEnabled,
+          volume: volume ?? this.volume,
+          ascendingVolume: ascendingVolume ?? this.ascendingVolume,
+          snoozeMinutes: snoozeMinutes ?? this.snoozeMinutes,
+          autoStop: autoStop ?? this.autoStop,
+          autoStopAfterMinutes:
+              autoStopAfterMinutes ?? this.autoStopAfterMinutes,
+          nextTrigger: nextTrigger ?? this.nextTrigger);
 }
 
 enum PlaybackMode { shuffle, sequential, repeatOne }
@@ -130,7 +190,7 @@ extension AlarmScheduling on Alarm {
 
 extension AlarmLifecycle on Alarm {
   void updateNextTrigger() {
-    nextTrigger = calculateNextTrigger(Alarm());
+    // nextTrigger = calculateNextTrigger(Alarm());
     updatedAt = DateTime.now();
   }
 }

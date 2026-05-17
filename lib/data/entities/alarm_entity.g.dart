@@ -166,27 +166,28 @@ Alarm _alarmDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Alarm();
-  object.ascendingVolume = reader.readBool(offsets[0]);
-  object.assetPath = reader.readString(offsets[1]);
-  object.autoStop = reader.readBool(offsets[2]);
-  object.autoStopAfterMinutes = reader.readLong(offsets[3]);
-  object.createdAt = reader.readDateTime(offsets[4]);
-  object.hour = reader.readLong(offsets[5]);
-  object.id = id;
-  object.isActive = reader.readBool(offsets[6]);
-  object.label = reader.readStringOrNull(offsets[7]);
-  object.minute = reader.readLong(offsets[8]);
-  object.nextTrigger = reader.readDateTimeOrNull(offsets[9]);
-  object.playOnce = reader.readBool(offsets[10]);
-  object.playbackMode =
-      _AlarmplaybackModeValueEnumMap[reader.readByteOrNull(offsets[11])] ??
-          PlaybackMode.shuffle;
-  object.repeatDays = reader.readLongList(offsets[12]) ?? [];
-  object.snoozeMinutes = reader.readLong(offsets[13]);
-  object.updatedAt = reader.readDateTime(offsets[14]);
-  object.vibrateEnabled = reader.readBool(offsets[15]);
-  object.volume = reader.readDouble(offsets[16]);
+  final object = Alarm(
+    ascendingVolume: reader.readBool(offsets[0]),
+    assetPath: reader.readString(offsets[1]),
+    autoStop: reader.readBool(offsets[2]),
+    autoStopAfterMinutes: reader.readLong(offsets[3]),
+    createdAt: reader.readDateTime(offsets[4]),
+    hour: reader.readLong(offsets[5]),
+    id: id,
+    isActive: reader.readBool(offsets[6]),
+    label: reader.readStringOrNull(offsets[7]),
+    minute: reader.readLong(offsets[8]),
+    nextTrigger: reader.readDateTimeOrNull(offsets[9]),
+    playOnce: reader.readBool(offsets[10]),
+    playbackMode:
+        _AlarmplaybackModeValueEnumMap[reader.readByteOrNull(offsets[11])] ??
+            PlaybackMode.shuffle,
+    repeatDays: reader.readLongList(offsets[12]) ?? [],
+    snoozeMinutes: reader.readLong(offsets[13]),
+    updatedAt: reader.readDateTime(offsets[14]),
+    vibrateEnabled: reader.readBool(offsets[15]),
+    volume: reader.readDouble(offsets[16]),
+  );
   return object;
 }
 
@@ -249,7 +250,7 @@ const _AlarmplaybackModeValueEnumMap = {
 };
 
 Id _alarmGetId(Alarm object) {
-  return object.id;
+  return object.id ?? Isar.autoIncrement;
 }
 
 List<IsarLinkBase<dynamic>> _alarmGetLinks(Alarm object) {
@@ -646,7 +647,23 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idEqualTo(Id value) {
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'id',
+      ));
+    });
+  }
+
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idEqualTo(Id? value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -656,7 +673,7 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
   }
 
   QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idGreaterThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -669,7 +686,7 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
   }
 
   QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idLessThan(
-    Id value, {
+    Id? value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -682,8 +699,8 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
   }
 
   QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idBetween(
-    Id lower,
-    Id upper, {
+    Id? lower,
+    Id? upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {

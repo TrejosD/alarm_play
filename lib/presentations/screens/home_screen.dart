@@ -1,4 +1,5 @@
 import 'package:alarm_play/core/providers/alarm_provider.dart';
+import 'package:alarm_play/presentations/screens/new_alarm_screen.dart';
 import 'package:alarm_play/presentations/widgets/alarm_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +34,11 @@ class HomeScreen extends ConsumerWidget {
           loading: () => Center(child: CircularProgressIndicator())),
       floatingActionButton: FloatingActionButton(
         // todo create alarm metod and Screen
-        onPressed: () {},
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => NewAlarmScreen(),
+          ));
+        },
         child: Icon(Icons.add_alarm_rounded),
       ),
     );
