@@ -11,7 +11,7 @@ class AlarmSchedulerService {
   Future<void> schedule(Alarm alarm) async {
     if (alarm.nextTrigger == null) return;
     await notifications.zonedSchedule(
-      id: alarm.id,
+      id: alarm.id ?? 1,
       title: 'Alarm',
       body: alarm.label ?? 'Wake up',
       scheduledDate: tz.TZDateTime.from(alarm.nextTrigger!, tz.local),
