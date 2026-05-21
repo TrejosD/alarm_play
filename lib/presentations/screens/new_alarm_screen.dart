@@ -13,55 +13,63 @@ class NewAlarmScreen extends ConsumerStatefulWidget {
 }
 
 class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
-  late Alarm newAlarm;
-  TimeOfDay? selectedTime = TimeOfDay.now();
+  final Alarm newAlarm = Alarm(
+      hour: TimeOfDay.now().hour,
+      minute: TimeOfDay.now().minute,
+      createdAt: DateTime.now(),
+      updatedAt: DateTime.now(),
+      repeatDays: [],
+      assetPath: 'assets/audiofiles/alarm.mp3',
+      playbackMode: PlaybackMode.repeatOne,
+      isActive: true,
+      playOnce: false,
+      vibrateEnabled: true,
+      volume: 1.0,
+      autoStop: false,
+      ascendingVolume: true,
+      snoozeMinutes: 10,
+      autoStopAfterMinutes: 30);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlarmWidget(
+      alarm: widget.alarm == null ? newAlarm : widget.alarm!,
+      title: widget.alarm == null ? 'Crear Alarma' : 'Editar Alarma',
+    );
+  }
+}
+
+class AlarmWidget extends ConsumerStatefulWidget {
+  final Alarm alarm;
+  final String title;
+  const AlarmWidget({super.key, required this.alarm, required this.title});
+
+  @override
+  ConsumerState<AlarmWidget> createState() => _AlarmWidgetState();
+}
+
+class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
+  TimeOfDay? selectedTime;
   bool vibrar = true;
   bool playOnce = false;
   bool autoStop = false;
   bool ascendingVolume = true;
   int snoozeMinutes = 10;
+  int autoStopAfter = 30;
   List<int> repeat = [];
   PlaybackMode playBackMode = PlaybackMode.repeatOne;
   double volume = 100;
+  final TextEditingController controller = TextEditingController();
   // todo nextTrigger variable
-  @override
-  void initState() {
-    super.initState();
-    // se iguala widged.alarm al newAlarm si existe. ?? Sino existe alarm. Se crea una nueva. Para trabajar solamente con el objeto newAlarm
-    if (widget.alarm == null) {
-      newAlarm = Alarm(
-          label: 'new',
-          hour: selectedTime!.hour,
-          minute: selectedTime!.minute,
-          createdAt: DateTime.now(),
-          updatedAt: DateTime.now(),
-          repeatDays: repeat,
-          assetPath: 'assets/audiofiles/alarm.mp3',
-          playbackMode: playBackMode,
-          isActive: true,
-          playOnce: playOnce,
-          vibrateEnabled: vibrar,
-          volume: volume,
-          autoStop: autoStop,
-          ascendingVolume: ascendingVolume,
-          snoozeMinutes: snoozeMinutes,
-          autoStopAfterMinutes: 20,
-          nextTrigger: DateTime(1).add(Duration(days: 1)));
-    } else {
-      newAlarm = widget.alarm!;
-      selectedTime =
-          TimeOfDay(hour: widget.alarm!.hour, minute: widget.alarm!.minute);
-    }
-  }
 
   void acceptAlarm() {
-    final alarm = newAlarm.copyWith(
+    final alarm = widget.alarm.copyWith(
         hour: selectedTime!.hour,
         minute: selectedTime!.minute,
         ascendingVolume: ascendingVolume,
         assetPath: 'assets/audiofiles/alarm.mp3',
         autoStop: autoStop,
-        autoStopAfterMinutes: 20,
+        autoStopAfterMinutes: autoStopAfter,
         isActive: true,
         nextTrigger: DateTime(1).add(Duration(days: 1)),
         playOnce: playOnce,
@@ -79,7 +87,6 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController controller = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -91,8 +98,7 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
           IconButton(
               onPressed: () => acceptAlarm(), icon: Icon(Icons.check_rounded))
         ],
-        title:
-            widget.alarm != null ? Text('Editar alarma') : Text('Crear alarma'),
+        title: Text(widget.title),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -102,7 +108,10 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
               onTap: () async {
                 final TimeOfDay? time = await showTimePicker(
                   context: context,
-                  initialTime: selectedTime ?? TimeOfDay.now(),
+                  initialTime: selectedTime ??
+                      TimeOfDay(
+                          hour: widget.alarm.minute,
+                          minute: widget.alarm.minute),
                   initialEntryMode: TimePickerEntryMode.dial,
                   builder: (context, child) {
                     return child!;
@@ -113,8 +122,9 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
                 });
               },
               child: Text(
-                Obtain12hoursService.obtenerFormatoAmPm(
-                    selectedTime ?? TimeOfDay.now()),
+                Obtain12hoursService.obtenerFormatoAmPm(selectedTime ??
+                    TimeOfDay(
+                        hour: widget.alarm.hour, minute: widget.alarm.minute)),
                 style: TextStyle(fontSize: 42),
               ),
             ),
@@ -162,13 +172,19 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
                 SizedBox(
                   width: 60,
                   child: TextFormField(
+                    textAlign: TextAlign.center,
                     controller: controller,
                     keyboardType: TextInputType.numberWithOptions(),
                     onChanged: (value) {
-                      snoozeMinutes = int.parse(controller.text);
+                      if (value.isEmpty) {
+                        snoozeMinutes = widget.alarm.snoozeMinutes;
+                      } else {
+                        snoozeMinutes = int.parse(controller.text);
+                      }
                     },
                     decoration: InputDecoration(
-                        hintText: newAlarm.snoozeMinutes.toString()),
+                        border: InputBorder.none,
+                        hintText: widget.alarm.snoozeMinutes.toString()),
                   ),
                 )
               ],
