@@ -19,6 +19,7 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
   bool playOnce = false;
   bool autoStop = false;
   bool ascendingVolume = true;
+  int snoozeMinutes = 10;
   List<int> repeat = [];
   PlaybackMode playBackMode = PlaybackMode.repeatOne;
   double volume = 100;
@@ -43,7 +44,7 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
           volume: volume,
           autoStop: autoStop,
           ascendingVolume: ascendingVolume,
-          snoozeMinutes: 10,
+          snoozeMinutes: snoozeMinutes,
           autoStopAfterMinutes: 20,
           nextTrigger: DateTime(1).add(Duration(days: 1)));
     } else {
@@ -66,7 +67,7 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
         playOnce: playOnce,
         playbackMode: playBackMode,
         repeatDays: repeat,
-        snoozeMinutes: 10,
+        snoozeMinutes: snoozeMinutes,
         updatedAt: DateTime.now(),
         vibrateEnabled: vibrar,
         volume: volume);
@@ -78,7 +79,7 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
+    final TextEditingController controller = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -116,7 +117,13 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
                     selectedTime ?? TimeOfDay.now()),
                 style: TextStyle(fontSize: 42),
               ),
-              // todo crear human time layout
+            ),
+            SizedBox(
+              height: 30,
+            ),
+            // esta linea debe ser mas resaltada
+            Row(
+              children: [Text("Seleccionar playList")],
             ),
             Row(
               children: [
@@ -145,6 +152,46 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
                   },
                 )
               ],
+            ),
+            Row(
+              children: [
+                Text('Silenciar durante: '),
+                // todo este metodo no seria un switch, simplemente necesito el ingreso del tiempo a silenciar
+                // me suena mas, el bool y que desactive el input para el tiempo
+                Spacer(),
+                SizedBox(
+                  width: 60,
+                  child: TextFormField(
+                    controller: controller,
+                    keyboardType: TextInputType.numberWithOptions(),
+                    onChanged: (value) {
+                      snoozeMinutes = int.parse(controller.text);
+                    },
+                    decoration: InputDecoration(
+                        hintText: newAlarm.snoozeMinutes.toString()),
+                  ),
+                )
+              ],
+            ),
+            Row(
+              children: [
+                Text('Desactivar despues de: '),
+                // todo crear el metodo sea false si es cero. y un combinado donde se pueda desactivar y bloquear un input para el tiempo
+                // me suena mas, el bool y que desactive el input para el tiempo
+                Spacer(),
+                Switch(
+                  value: autoStop,
+                  onChanged: (value) {
+                    setState(() {
+                      playOnce = !playOnce;
+                    });
+                  },
+                )
+              ],
+            ),
+            // linea de ejemplo, para ingreso de timepo
+            Row(
+              children: [Text('Minutos'), Spacer(), Text('30')],
             )
             // todo Necesito que este screen cree una Alarm de acuerdo a los inputs. Para guardarla
             // forma de seleccionar hora DONE

@@ -4,35 +4,42 @@ part 'alarm_entity.g.dart';
 
 @collection
 class Alarm {
+  // id lo ingresa Isar
   Id? id = Isar.autoIncrement;
+  // label no es necesario, podemos utilizarlo para indentificacion futura, como un identifier para el usuario
   String? label;
-
+// horario de la alerta
   late int hour;
   late int minute;
-
+// horario de creacion y edicion
   late DateTime createdAt;
   late DateTime updatedAt;
-
+// dias a sonar la alarma
   late List<int> repeatDays; // 1-7
-
+// ruta de archivo sonido - sera Innecesario
   String assetPath = 'assets/audiofiles/alarm.mp3';
 
   // late int playlistId;
+  // forma de reproduccion de sonido
   @enumerated
   late PlaybackMode playbackMode;
-
+// esta activa la alarma
   late bool isActive;
-
+// sonara y se eliminara auto
   bool playOnce = false;
+  // vibracion activada?
   bool vibrateEnabled = true;
-
+// valor del volumen
   double volume = 1.0;
+  // el volumen es ascedente?
   bool ascendingVolume = false;
-
+// tiempo que la alarma de pausa
   int snoozeMinutes = 10;
-
+// alarma suena y se coloca inActive. No se elimina solo se desactiva
   bool autoStop = false;
+// tiempo en que la alarma se desactiva auto
   int autoStopAfterMinutes = 30;
+  // fecha siguiente alarma
   DateTime? nextTrigger;
 
   Alarm(
