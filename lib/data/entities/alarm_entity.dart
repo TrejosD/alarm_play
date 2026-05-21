@@ -36,8 +36,8 @@ class Alarm {
   DateTime? nextTrigger;
 
   Alarm(
-      {required this.id,
-      required this.label,
+      {this.id,
+      this.label,
       required this.hour,
       required this.minute,
       required this.createdAt,
@@ -53,7 +53,7 @@ class Alarm {
       required this.ascendingVolume,
       required this.snoozeMinutes,
       required this.autoStopAfterMinutes,
-      required this.nextTrigger});
+      this.nextTrigger});
 
   Alarm copyWith(
           {Id? id,

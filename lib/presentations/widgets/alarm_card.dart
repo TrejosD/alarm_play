@@ -1,4 +1,5 @@
 import 'package:alarm_play/core/controllers/alarm_controller_provider.dart';
+import 'package:alarm_play/core/services/obtain_12hours_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,6 +11,7 @@ class AlarmCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, ref) {
+    final selectedTime = TimeOfDay(hour: alarm.hour, minute: alarm.minute);
     return ListTile(
       leading: IconButton(
         onPressed: () {
@@ -25,7 +27,7 @@ class AlarmCard extends ConsumerWidget {
       ),
       title: Row(
         children: [
-          Text('${alarm.hour} : ${alarm.minute.toString().padLeft(2, '0')}'),
+          Text(Obtain12hoursService.obtenerFormatoAmPm(selectedTime)),
           Switch(
               value: alarm.isActive,
               onChanged: (_) {

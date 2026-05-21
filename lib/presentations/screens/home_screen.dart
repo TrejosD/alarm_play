@@ -22,8 +22,17 @@ class HomeScreen extends ConsumerWidget {
             return ListView.builder(
               itemCount: alarms.length,
               itemBuilder: (context, index) {
-                return AlarmCard(
-                  alarm: alarms[index],
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => NewAlarmScreen(
+                        alarm: alarms[index],
+                      ),
+                    ));
+                  },
+                  child: AlarmCard(
+                    alarm: alarms[index],
+                  ),
                 );
               },
             );
@@ -33,7 +42,6 @@ class HomeScreen extends ConsumerWidget {
               ),
           loading: () => Center(child: CircularProgressIndicator())),
       floatingActionButton: FloatingActionButton(
-        // todo create alarm metod and Screen
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
             builder: (context) => NewAlarmScreen(),
