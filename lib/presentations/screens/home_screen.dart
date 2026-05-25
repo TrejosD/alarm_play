@@ -19,22 +19,34 @@ class HomeScreen extends ConsumerWidget {
                 child: Text('No alarms'),
               );
             }
-            return ListView.builder(
-              itemCount: alarms.length,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => NewAlarmScreen(
-                        alarm: alarms[index],
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ListView.builder(
+                itemCount: alarms.length,
+                itemBuilder: (context, index) {
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => NewAlarmScreen(
+                          alarm: alarms[index],
+                        ),
+                      ));
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black12,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: AlarmCard(
+                          alarm: alarms[index],
+                        ),
                       ),
-                    ));
-                  },
-                  child: AlarmCard(
-                    alarm: alarms[index],
-                  ),
-                );
-              },
+                    ),
+                  );
+                },
+              ),
             );
           },
           error: (e, _) => Center(

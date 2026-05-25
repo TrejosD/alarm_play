@@ -12,6 +12,11 @@ class AlarmCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, ref) {
     final selectedTime = TimeOfDay(hour: alarm.hour, minute: alarm.minute);
+    final now = DateTime.now();
+    final DateTime selectedDateTime = DateTime(
+        now.year, now.month, now.day, selectedTime.hour, selectedTime.minute);
+    final nextRing = selectedDateTime
+        .subtract(Duration(hours: now.hour, minutes: now.minute));
     return ListTile(
       leading: IconButton(
         onPressed: () {
@@ -21,13 +26,21 @@ class AlarmCard extends ConsumerWidget {
       ),
       subtitle: Column(
         children: [
-          Row(children: [Text('Repeticion'), Text('Sonara dentro de XXX')]),
+          Row(children: [Text('Repeticion: '), Text('${alarm.repeatDays}')]),
+          Row(children: [
+            Text('Sonará dentro de: '),
+            Text('${nextRing.hour}: ${nextRing.minute} hrs')
+          ]),
           Text('Song / PlayList Name'),
         ],
       ),
       title: Row(
         children: [
-          Text(Obtain12hoursService.obtenerFormatoAmPm(selectedTime)),
+          Text(
+            Obtain12hoursService.obtenerFormatoAmPm(selectedTime),
+            style: TextStyle(fontSize: 23),
+          ),
+          Spacer(),
           Switch(
               value: alarm.isActive,
               onChanged: (_) {
