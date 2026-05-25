@@ -96,13 +96,5 @@ class AlarmController {
   }
 
   Future<void> scheduleAlarm(Alarm alarm) async {}
-  Future<void> cancelAlarm(int? id) async {
-    if (id == null) return;
-    Alarm? alarm = await isar.alarms.get(id);
-    if (alarm == null) return;
-    alarm = alarm.copyWith(isActive: false);
-    await isar.writeTxn(() async {
-      await isar.alarms.put(alarm!);
-    });
-  }
+  Future<void> cancelAlarm(int? id) async {}
 }

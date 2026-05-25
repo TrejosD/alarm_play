@@ -86,6 +86,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   @override
   Widget build(BuildContext context) {
     void acceptAlarm() {
+      final nexTrigger = widget.alarm.calculateNextTrigger();
       selectedTime ??
           {
             selectedTime = TimeOfDay(
@@ -99,7 +100,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
           autoStop: autoStop,
           autoStopAfterMinutes: autoStopAfter,
           isActive: true,
-          nextTrigger: DateTime(1).add(Duration(days: 1)),
+          nextTrigger: nexTrigger,
           playOnce: playOnce,
           playbackMode: playBackMode,
           repeatDays: repeat,
