@@ -12,10 +12,12 @@ class NewAlarmScreen extends ConsumerStatefulWidget {
   ConsumerState<NewAlarmScreen> createState() => _NewAlarmScreenState();
 }
 
+final time = TimeOfDay.now();
+
 class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
   final Alarm newAlarm = Alarm(
-      hour: TimeOfDay.now().hour,
-      minute: TimeOfDay.now().minute,
+      hour: time.hour,
+      minute: time.minute,
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       repeatDays: [],
@@ -49,44 +51,82 @@ class AlarmWidget extends ConsumerStatefulWidget {
 }
 
 class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
-  TimeOfDay? selectedTime;
-  bool vibrar = true;
-  bool playOnce = false;
-  bool autoStop = false;
-  bool ascendingVolume = true;
-  int snoozeMinutes = 10;
-  int autoStopAfter = 30;
-  List<int> repeat = [];
-  PlaybackMode playBackMode = PlaybackMode.repeatOne;
-  double volume = 100;
-  final TextEditingController controller = TextEditingController();
-  // todo nextTrigger variable
+  // este default funciona, para nuevas alarmas, pero necesito que sean == al la alarma recivida, cuando editados una
+  // todo problema yo movi todas las variables debajo del context, para poder igualar los parametros al alarm recibido, pero ahora el widget esta estatico. *-*
+  // todo necesito, volver al comportamiento anterior, pero que use los parametros del alarm recibida, cuando edito un alarm
 
-  void acceptAlarm() {
-    final alarm = widget.alarm.copyWith(
-        hour: selectedTime!.hour,
-        minute: selectedTime!.minute,
-        ascendingVolume: ascendingVolume,
-        assetPath: 'assets/audiofiles/alarm.mp3',
-        autoStop: autoStop,
-        autoStopAfterMinutes: autoStopAfter,
-        isActive: true,
-        nextTrigger: DateTime(1).add(Duration(days: 1)),
-        playOnce: playOnce,
-        playbackMode: playBackMode,
-        repeatDays: repeat,
-        snoozeMinutes: snoozeMinutes,
-        updatedAt: DateTime.now(),
-        vibrateEnabled: vibrar,
-        volume: volume);
-    ref.read(alarmControllerProvider).createAlarm(alarm);
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
+  TimeOfDay? selectedTime;
+  late bool vibrar;
+  late bool playOnce;
+  late bool autoStop;
+  late bool ascendingVolume;
+  late int snoozeMinutes;
+  late int autoStopAfter;
+  late List<int> repeat;
+  late PlaybackMode playBackMode;
+  late double volume;
+  // DateTime? nexTrigger = widget.alarm.nextTrigger;
+  final TextEditingController snoozeCtrller = TextEditingController();
+  final TextEditingController stopCtrller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    vibrar = widget.alarm.vibrateEnabled;
+    playOnce = widget.alarm.playOnce;
+    autoStop = widget.alarm.autoStop;
+    ascendingVolume = widget.alarm.ascendingVolume;
+    snoozeMinutes = widget.alarm.snoozeMinutes;
+    autoStopAfter = widget.alarm.autoStopAfterMinutes;
+    repeat = widget.alarm.repeatDays;
+    playBackMode = widget.alarm.playbackMode;
+    volume = widget.alarm.volume;
   }
 
   @override
   Widget build(BuildContext context) {
+    void acceptAlarm() {
+      selectedTime ??
+          {
+            selectedTime = TimeOfDay(
+                hour: DateTime.now().hour, minute: DateTime.now().minute)
+          };
+      final alarm = widget.alarm.copyWith(
+          hour: selectedTime!.hour,
+          minute: selectedTime!.minute,
+          ascendingVolume: ascendingVolume,
+          assetPath: 'assets/audiofiles/alarm.mp3',
+          autoStop: autoStop,
+          autoStopAfterMinutes: autoStopAfter,
+          isActive: true,
+          nextTrigger: DateTime(1).add(Duration(days: 1)),
+          playOnce: playOnce,
+          playbackMode: playBackMode,
+          repeatDays: repeat,
+          snoozeMinutes: snoozeMinutes,
+          updatedAt: DateTime.now(),
+          vibrateEnabled: vibrar,
+          volume: volume);
+      ref.read(alarmControllerProvider).createAlarm(alarm);
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    }
+
+    void setNewSnoozeNStopTime(String value, int time, int alarmTime,
+        TextEditingController controller, String indicator) {
+      if (value.isEmpty) return;
+      if (indicator == 'snooze') {
+        setState(() {
+          snoozeMinutes = int.parse(controller.text);
+        });
+      } else {
+        setState(() {
+          autoStopAfter = int.parse(controller.text);
+        });
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -110,11 +150,13 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                   context: context,
                   initialTime: selectedTime ??
                       TimeOfDay(
-                          hour: widget.alarm.minute,
-                          minute: widget.alarm.minute),
+                          hour: widget.alarm.hour, minute: widget.alarm.minute),
                   initialEntryMode: TimePickerEntryMode.dial,
                   builder: (context, child) {
-                    return child!;
+                    return MediaQuery(
+                        data: MediaQuery.of(context)
+                            .copyWith(alwaysUse24HourFormat: false),
+                        child: child!);
                   },
                 );
                 setState(() {
@@ -163,6 +205,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                 )
               ],
             ),
+
             Row(
               children: [
                 Text('Silenciar durante: '),
@@ -170,21 +213,15 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                 // me suena mas, el bool y que desactive el input para el tiempo
                 Spacer(),
                 SizedBox(
+                  height: 42,
                   width: 60,
-                  child: TextFormField(
-                    textAlign: TextAlign.center,
-                    controller: controller,
-                    keyboardType: TextInputType.numberWithOptions(),
-                    onChanged: (value) {
-                      if (value.isEmpty) {
-                        snoozeMinutes = widget.alarm.snoozeMinutes;
-                      } else {
-                        snoozeMinutes = int.parse(controller.text);
-                      }
-                    },
-                    decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: widget.alarm.snoozeMinutes.toString()),
+                  child: InputField(
+                    widget: widget,
+                    controller: snoozeCtrller,
+                    indicator: 'snooze',
+                    alarmTime: widget.alarm.snoozeMinutes,
+                    time: snoozeMinutes,
+                    setTime: setNewSnoozeNStopTime,
                   ),
                 )
               ],
@@ -199,7 +236,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                   value: autoStop,
                   onChanged: (value) {
                     setState(() {
-                      playOnce = !playOnce;
+                      autoStop = !autoStop;
                     });
                   },
                 )
@@ -207,7 +244,29 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
             ),
             // linea de ejemplo, para ingreso de timepo
             Row(
-              children: [Text('Minutos'), Spacer(), Text('30')],
+              children: [
+                Text('Minutos'),
+                Spacer(),
+                autoStop
+                    ? SizedBox(
+                        height: 42,
+                        width: 60,
+                        child: InputField(
+                          controller: stopCtrller,
+                          widget: widget,
+                          indicator: 'autoStop',
+                          time: autoStopAfter,
+                          alarmTime: widget.alarm.autoStopAfterMinutes,
+                          setTime: setNewSnoozeNStopTime,
+                        ))
+                    : SizedBox(
+                        width: 60,
+                        child: Text(
+                          autoStopAfter.toString(),
+                          textAlign: TextAlign.center,
+                        ),
+                      )
+              ],
             )
             // todo Necesito que este screen cree una Alarm de acuerdo a los inputs. Para guardarla
             // forma de seleccionar hora DONE
@@ -223,6 +282,46 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
           label: Text('Accept'),
           onPressed: () => acceptAlarm(),
           icon: Icon(Icons.add_alarm)),
+    );
+  }
+}
+
+class InputField extends StatelessWidget {
+  // controllador
+  final TextEditingController controller;
+  // widgerRef
+  final AlarmWidget widget;
+  // valor int del objeto Alarm
+  final int alarmTime;
+  // variable de tiempo this snooze or stopAfter
+  final int time;
+  // indicador de valor a modificar
+  final String indicator;
+  final void Function(String value, int time, int alarmTime,
+      TextEditingController controller, String indicator) setTime;
+
+  const InputField(
+      {super.key,
+      required this.controller,
+      required this.widget,
+      required this.time,
+      required this.alarmTime,
+      required this.setTime,
+      required this.indicator});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      textAlign: TextAlign.center,
+      textAlignVertical: TextAlignVertical(y: 1),
+      controller: controller,
+      keyboardType: TextInputType.numberWithOptions(),
+      onChanged: (value) =>
+          setTime(value, time, alarmTime, controller, indicator),
+      decoration: InputDecoration(
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(50))),
+          hintText: alarmTime.toString()),
     );
   }
 }
