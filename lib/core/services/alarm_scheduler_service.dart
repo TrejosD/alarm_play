@@ -8,7 +8,7 @@ class AlarmSchedulerService {
 
   AlarmSchedulerService(this.notifications);
 
-  Future<void> schedule(Alarm alarm) async {
+  Future<void> scheduleAlarm(Alarm alarm) async {
     if (alarm.nextTrigger == null) return;
     await notifications.zonedSchedule(
       id: alarm.id ?? 1,
@@ -22,6 +22,9 @@ class AlarmSchedulerService {
               fullScreenIntent: true,
               category: AndroidNotificationCategory.alarm,
               playSound: false,
+              enableVibration: alarm.vibrateEnabled,
+              ongoing: true,
+              autoCancel: false,
               visibility: NotificationVisibility.public)),
       payload: alarm.id.toString(),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -31,6 +34,10 @@ class AlarmSchedulerService {
 
   Future<void> cancel(int id) async {
     await notifications.cancel(id: id);
+  }
+
+  Future<void> cancelAll() async {
+    await notifications.cancelAll();
   }
 
   // DateTime _nextInstance(Alarm alarm) {

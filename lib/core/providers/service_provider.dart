@@ -6,3 +6,8 @@ final alarmSchedulerProvider = Provider<AlarmSchedulerService>((ref) {
   final plugin = FlutterLocalNotificationsPlugin();
   return AlarmSchedulerService(plugin);
 });
+
+final flutterNotificationsProvider =
+    Provider<FlutterLocalNotificationsPlugin>((ref) {
+  return FlutterLocalNotificationsPlugin();
+});

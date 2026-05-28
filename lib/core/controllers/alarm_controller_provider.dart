@@ -1,4 +1,5 @@
 import 'package:alarm_play/core/db/isar_service.dart';
+import 'package:alarm_play/core/providers/service_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:isar/isar.dart';
 
@@ -95,6 +96,13 @@ class AlarmController {
     });
   }
 
-  Future<void> scheduleAlarm(Alarm alarm) async {}
-  Future<void> cancelAlarm(int? id) async {}
+  Future<void> scheduleAlarm(Alarm alarm) async {
+    final scheduler = ref.read(alarmSchedulerProvider);
+    await scheduler.scheduleAlarm(alarm);
+  }
+
+  Future<void> cancelAlarm(int? id) async {
+    final scheduler = ref.read(alarmSchedulerProvider);
+    await scheduler.cancel(id!);
+  }
 }
