@@ -35,6 +35,7 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
   @override
   Widget build(BuildContext context) {
     return AlarmWidget(
+      // siempre se envia una alarma, newAlarm la default para crear nueva, y widger.alarm para editar
       alarm: widget.alarm == null ? newAlarm : widget.alarm!,
       title: widget.alarm == null ? 'Crear Alarma' : 'Editar Alarma',
     );
@@ -51,10 +52,6 @@ class AlarmWidget extends ConsumerStatefulWidget {
 }
 
 class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
-  // este default funciona, para nuevas alarmas, pero necesito que sean == al la alarma recivida, cuando editados una
-  // todo problema yo movi todas las variables debajo del context, para poder igualar los parametros al alarm recibido, pero ahora el widget esta estatico. *-*
-  // todo necesito, volver al comportamiento anterior, pero que use los parametros del alarm recibida, cuando edito un alarm
-
   TimeOfDay? selectedTime;
   late bool vibrar;
   late bool playOnce;
@@ -109,6 +106,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
           vibrateEnabled: vibrar,
           volume: volume);
       ref.read(alarmControllerProvider).createAlarm(alarm);
+      ref.read(alarmControllerProvider).scheduleAlarm(alarm);
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -210,8 +208,6 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
             Row(
               children: [
                 Text('Silenciar durante: '),
-                // todo este metodo no seria un switch, simplemente necesito el ingreso del tiempo a silenciar
-                // me suena mas, el bool y que desactive el input para el tiempo
                 Spacer(),
                 SizedBox(
                   height: 42,
@@ -230,8 +226,6 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
             Row(
               children: [
                 Text('Desactivar despues de: '),
-                // todo crear el metodo sea false si es cero. y un combinado donde se pueda desactivar y bloquear un input para el tiempo
-                // me suena mas, el bool y que desactive el input para el tiempo
                 Spacer(),
                 Switch(
                   value: autoStop,
