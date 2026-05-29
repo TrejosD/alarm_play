@@ -21,4 +21,6 @@ class NotificationService {
           onAlarmTriggered(alarmId);
         });
   }
+
+  Future<void> showNotification() async {}
 }

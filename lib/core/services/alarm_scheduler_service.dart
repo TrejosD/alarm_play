@@ -9,6 +9,7 @@ class AlarmSchedulerService {
   AlarmSchedulerService(this.notifications);
 
   Future<void> scheduleAlarm(Alarm alarm) async {
+    print(alarm.nextTrigger);
     if (alarm.nextTrigger == null) return;
     await notifications.zonedSchedule(
       id: alarm.id ?? 1,
@@ -30,6 +31,22 @@ class AlarmSchedulerService {
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: null,
     );
+  }
+
+  Future<void> showNotification(int id) async {
+    await notifications.show(
+        id: id,
+        title: 'Notificacion Local',
+        body: 'Notificacion Exitosa',
+        notificationDetails: NotificationDetails(
+            android: AndroidNotificationDetails('alarm-channel', 'alarm',
+                importance: Importance.high,
+                ongoing: true,
+                playSound: true,
+                category: AndroidNotificationCategory.alarm,
+                enableVibration: true,
+                visibility: NotificationVisibility.public)),
+        payload: '123');
   }
 
   Future<void> cancel(int id) async {

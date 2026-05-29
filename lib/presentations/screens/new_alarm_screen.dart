@@ -83,7 +83,9 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   @override
   Widget build(BuildContext context) {
     void acceptAlarm() {
-      final nexTrigger = widget.alarm.calculateNextTrigger();
+      final now = DateTime.now();
+      final nexTrigger = DateTime(now.year, now.month, now.day,
+          selectedTime!.hour, selectedTime!.minute);
       selectedTime ??
           {
             selectedTime = TimeOfDay(

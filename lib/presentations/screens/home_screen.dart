@@ -53,6 +53,14 @@ class HomeScreen extends ConsumerWidget {
                 child: Text('Error ${e.toString()}'),
               ),
           loading: () => Center(child: CircularProgressIndicator())),
+      // Probar Notificationes Local
+      // floatingActionButton: FloatingActionButton(
+      //     onPressed: () {
+      //       final notifications = FlutterLocalNotificationsPlugin();
+      //       final service = AlarmSchedulerService(notifications);
+      //       service.showNotification(1);
+      //     },
+      //     child: Text('Notificacion')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(
