@@ -1,5 +1,6 @@
 import 'package:alarm_play/core/db/isar_service.dart';
 import 'package:alarm_play/core/navigation/app_router.dart';
+import 'package:alarm_play/core/providers/alarm_restore_provider.dart';
 import 'package:alarm_play/core/services/notification_service.dart';
 import 'package:alarm_play/core/services/time_zone_service.dart';
 import 'package:alarm_play/presentations/screens/alarm_ringing_screen.dart';
@@ -24,7 +25,10 @@ void main() async {
     navigatorKey.currentState?.push(MaterialPageRoute(
         builder: (_) => AlarmRingingScreen(alarmId: alarmId)));
   });
-  runApp(ProviderScope(child: MyApp()));
+  final container = ProviderContainer();
+
+  await container.read(alarmRestoreProvider).restoreAllActiveAlarms();
+  runApp(UncontrolledProviderScope(container: container, child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -2,6 +2,7 @@ import 'package:alarm_play/core/controllers/alarm_controller_provider.dart';
 import 'package:alarm_play/core/db/isar_service.dart';
 import 'package:alarm_play/core/providers/audio_service_provider.dart';
 import 'package:alarm_play/core/providers/vibration_service_provider.dart';
+import 'package:alarm_play/core/services/obtain_12hours_service.dart';
 import 'package:alarm_play/data/entities/alarm_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,15 +33,14 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
 
   Future<void> _startAlarm() async {
     final isar = IsarService.instance;
-    Alarm? alarm = await isar.alarms.get(widget.alarmId);
+    Alarm? alarm = await isar.alarms.get(1);
     if (alarm == null) return;
     final audio = ref.read(audioServiceProvider);
-
-    await audio.startAlarm(
-        assetPath: 'assets/audiofiles/maestro.mp3', volume: alarm.volume);
     if (alarm.vibrateEnabled) {
       await ref.read(vibrationServiceProvider).start();
     }
+    await audio.startAlarm(
+        assetPath: 'assets/audiofiles/alarm.mp3', volume: alarm.volume);
     setState(() {});
   }
 
@@ -56,23 +56,32 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final now = DateTime.now();
+    final TimeOfDay hora = TimeOfDay.now();
     final int silenciar = 10;
     return GestureDetector(
-      onTapMove: (details) => _stopAlarm(),
+      onVerticalDragDown: (details) {
+        _stopAlarm();
+      },
       child: Scaffold(
-        body: Row(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Center(
-              child: Text('${now.hour} : ${now.minute}'),
+              child: Text(
+                Obtain12hoursService.obtenerFormatoAmPm(hora),
+                style: TextStyle(fontSize: 58),
+              ),
               // todo aca tengo la hora actual en 24H, necesito como convertir la hora en 12H
+            ),
+            SizedBox(
+              height: 28,
             ),
             Text('Desliza para detener')
           ],
         ),
-        floatingActionButton: IconButton(
+        floatingActionButton: ElevatedButton.icon(
           onPressed: () {},
-          icon: Text('Silenciar por: $silenciar'),
+          label: Text('Silenciar por: $silenciar'),
           onLongPress: () {
             // todo Provider para la cantidad de tiempo de silencio en settings
             // todo medoto para selenciar alarma.
