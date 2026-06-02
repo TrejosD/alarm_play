@@ -82,6 +82,29 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
 
   @override
   Widget build(BuildContext context) {
+    List<int> _selectedDays = [];
+    final List<Map<String, dynamic>> _daysConfig = [
+      {'label': 'L', 'value': 1},
+      {'label': 'M', 'value': 2},
+      {'label': 'K', 'value': 3},
+      {'label': 'J', 'value': 4},
+      {'label': 'V', 'value': 5},
+      {'label': 'S', 'value': 6},
+      {'label': 'D', 'value': 7},
+    ];
+
+    void _toggleDay(int dayValue) {
+      setState(() {
+        if (_selectedDays.contains(dayValue)) {
+          _selectedDays.remove(dayValue);
+        } else {
+          _selectedDays.add(dayValue);
+        }
+        _selectedDays.sort();
+      });
+      print('Dias Seleccionados ${_selectedDays}');
+    }
+
     void acceptAlarm() {
       final now = DateTime.now();
       final nexTrigger = DateTime(now.year, now.month, now.day,
@@ -174,6 +197,21 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
             SizedBox(
               height: 30,
             ),
+            Wrap(
+                spacing: 8,
+                children: _daysConfig.map((day) {
+                  final int value = day['value'];
+                  final String label = day['label'];
+                  final bool isSelected = _selectedDays.contains(value);
+
+                  return FilterChip(
+                    label: Text(label),
+                    selected: isSelected,
+                    selectedColor: Colors.blue.shade200,
+                    checkmarkColor: Colors.blue.shade900,
+                    onSelected: (_) => _toggleDay(value),
+                  );
+                }).toList()),
             // esta linea debe ser mas resaltada
             Row(
               children: [Text("Seleccionar playList")],

@@ -1,4 +1,4 @@
-import 'package:alarm_play/data/entities/audiotrack_entity.dart';
+import 'package:alarm_play/data/entities/entities.dart';
 import 'package:isar/isar.dart';
 
 part 'playlist_entity.g.dart';
@@ -8,6 +8,7 @@ class Playlist {
   Id id = Isar.autoIncrement;
 
   late String name;
+  late DateTime createAt;
 
   late List<AudioTrack>? tracks;
 }

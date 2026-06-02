@@ -12,8 +12,8 @@ import 'package:just_audio_background/just_audio_background.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await IsarService.init();
   await TimeZoneService.init();
+  await IsarService.init();
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.example.alarm_play',
     androidNotificationChannelName: 'alarm_audio',
@@ -26,6 +26,10 @@ void main() async {
         builder: (_) => AlarmRingingScreen(alarmId: alarmId)));
   });
   final container = ProviderContainer();
+  final pending = await notifications.pendingNotificationRequests();
+  for (final notification in pending) {
+    print('Pending Notification ${notification.id}');
+  }
 
   await container.read(alarmRestoreProvider).restoreAllActiveAlarms();
   runApp(UncontrolledProviderScope(container: container, child: MyApp()));

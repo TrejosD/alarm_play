@@ -33,7 +33,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
 
   Future<void> _startAlarm() async {
     final isar = IsarService.instance;
-    Alarm? alarm = await isar.alarms.get(1);
+    Alarm? alarm = await isar.alarms.get(widget.alarmId);
     if (alarm == null) return;
     final audio = ref.read(audioServiceProvider);
     if (alarm.vibrateEnabled) {
@@ -45,10 +45,16 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
   }
 
   Future<void> _stopAlarm() async {
+    final isar = IsarService.instance;
+    Alarm? alarm = await isar.alarms.get(widget.alarmId);
     final controller = ref.read(alarmControllerProvider);
     await ref.read(audioServiceProvider).stop();
     await ref.read(vibrationServiceProvider).stop();
-    await controller.onAlarmTriggered(widget.alarmId);
+    if (alarm!.playOnce) {
+      await controller.deleteAlarm(alarm.id);
+    } else {
+      await controller.onAlarmTriggered(alarm.id!);
+    }
     if (mounted) {
       Navigator.of(context).pop();
     }

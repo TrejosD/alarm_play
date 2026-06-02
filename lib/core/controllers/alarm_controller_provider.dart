@@ -22,6 +22,7 @@ class AlarmController {
     });
     if (alarm.isActive) {
       await scheduleAlarm(alarm);
+      print('Schedule Alarm succeess');
     }
   }
 
