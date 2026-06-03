@@ -59,9 +59,9 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   late bool ascendingVolume;
   late int snoozeMinutes;
   late int autoStopAfter;
-  late List<int> repeat;
   late PlaybackMode playBackMode;
   late double volume;
+  late List<int> selectedDays;
   // DateTime? nexTrigger = widget.alarm.nextTrigger;
   final TextEditingController snoozeCtrller = TextEditingController();
   final TextEditingController stopCtrller = TextEditingController();
@@ -69,21 +69,20 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   @override
   void initState() {
     super.initState();
+    selectedDays = widget.alarm.repeatDays;
     vibrar = widget.alarm.vibrateEnabled;
     playOnce = widget.alarm.playOnce;
     autoStop = widget.alarm.autoStop;
     ascendingVolume = widget.alarm.ascendingVolume;
     snoozeMinutes = widget.alarm.snoozeMinutes;
     autoStopAfter = widget.alarm.autoStopAfterMinutes;
-    repeat = widget.alarm.repeatDays;
     playBackMode = widget.alarm.playbackMode;
     volume = widget.alarm.volume;
   }
 
   @override
   Widget build(BuildContext context) {
-    List<int> _selectedDays = [];
-    final List<Map<String, dynamic>> _daysConfig = [
+    final List<Map<String, dynamic>> daysConfig = [
       {'label': 'L', 'value': 1},
       {'label': 'M', 'value': 2},
       {'label': 'K', 'value': 3},
@@ -93,16 +92,16 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
       {'label': 'D', 'value': 7},
     ];
 
-    void _toggleDay(int dayValue) {
+    void toggleDay(int dayValue) {
+      // final days = [...ref.read(selectedDaysProvider)];
+      if (selectedDays.contains(dayValue)) {
+        selectedDays.remove(dayValue);
+      } else {
+        selectedDays.add(dayValue);
+      }
       setState(() {
-        if (_selectedDays.contains(dayValue)) {
-          _selectedDays.remove(dayValue);
-        } else {
-          _selectedDays.add(dayValue);
-        }
-        _selectedDays.sort();
+        selectedDays.sort();
       });
-      print('Dias Seleccionados ${_selectedDays}');
     }
 
     void acceptAlarm() {
@@ -125,7 +124,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
           nextTrigger: nexTrigger,
           playOnce: playOnce,
           playbackMode: playBackMode,
-          repeatDays: repeat,
+          repeatDays: selectedDays,
           snoozeMinutes: snoozeMinutes,
           updatedAt: DateTime.now(),
           vibrateEnabled: vibrar,
@@ -198,18 +197,18 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
               height: 30,
             ),
             Wrap(
-                spacing: 8,
-                children: _daysConfig.map((day) {
+                spacing: 2,
+                children: daysConfig.map((day) {
                   final int value = day['value'];
                   final String label = day['label'];
-                  final bool isSelected = _selectedDays.contains(value);
+                  final bool isSelected = selectedDays.contains(value);
 
                   return FilterChip(
                     label: Text(label),
+                    showCheckmark: false,
                     selected: isSelected,
-                    selectedColor: Colors.blue.shade200,
-                    checkmarkColor: Colors.blue.shade900,
-                    onSelected: (_) => _toggleDay(value),
+                    selectedColor: Colors.purple.shade300,
+                    onSelected: (_) => toggleDay(value),
                   );
                 }).toList()),
             // esta linea debe ser mas resaltada
