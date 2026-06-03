@@ -11,8 +11,6 @@ class AlarmSchedulerService {
   // todo filtrar si el schedule date sera antes de hoy y sumarle un dia
 
   Future<void> scheduleAlarm(Alarm alarm) async {
-    print('Scheduled alarm ${alarm.id}');
-    print('nextTrigger ${alarm.nextTrigger}');
     if (alarm.nextTrigger == null) return;
     await notifications.zonedSchedule(
       id: alarm.id ?? 1,

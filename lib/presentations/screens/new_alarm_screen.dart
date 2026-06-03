@@ -105,14 +105,14 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
     }
 
     void acceptAlarm() {
-      final now = DateTime.now();
-      final nexTrigger = DateTime(now.year, now.month, now.day,
-          selectedTime!.hour, selectedTime!.minute);
       selectedTime ??
           {
             selectedTime = TimeOfDay(
                 hour: DateTime.now().hour, minute: DateTime.now().minute)
           };
+      final trigeredAlarm = widget.alarm
+          .copyWith(hour: selectedTime!.hour, minute: selectedTime!.minute);
+      final nexTrigger = trigeredAlarm.calculateNextTrigger();
       final alarm = widget.alarm.copyWith(
           hour: selectedTime!.hour,
           minute: selectedTime!.minute,
@@ -131,6 +131,8 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
           volume: volume);
       ref.read(alarmControllerProvider).createAlarm(alarm);
       ref.read(alarmControllerProvider).scheduleAlarm(alarm);
+      alarm.calculateNextTrigger();
+      print('Next trigger ${alarm.nextTrigger}');
       if (mounted) {
         Navigator.of(context).pop();
       }
@@ -190,11 +192,15 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                 Obtain12hoursService.obtenerFormatoAmPm(selectedTime ??
                     TimeOfDay(
                         hour: widget.alarm.hour, minute: widget.alarm.minute)),
-                style: TextStyle(fontSize: 42),
+                style: TextStyle(fontSize: 46),
               ),
             ),
             SizedBox(
               height: 30,
+            ),
+            Text(
+              'Repetir',
+              style: TextStyle(fontSize: 18),
             ),
             Wrap(
                 spacing: 2,
@@ -211,6 +217,9 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                     onSelected: (_) => toggleDay(value),
                   );
                 }).toList()),
+            SizedBox(
+              height: 16,
+            ),
             // esta linea debe ser mas resaltada
             Row(
               children: [Text("Seleccionar playList")],
