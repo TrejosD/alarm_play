@@ -173,7 +173,6 @@ Alarm _alarmDeserialize(
     autoStopAfterMinutes: reader.readLong(offsets[3]),
     createdAt: reader.readDateTime(offsets[4]),
     hour: reader.readLong(offsets[5]),
-    id: id,
     isActive: reader.readBool(offsets[6]),
     label: reader.readStringOrNull(offsets[7]),
     minute: reader.readLong(offsets[8]),
@@ -188,6 +187,7 @@ Alarm _alarmDeserialize(
     vibrateEnabled: reader.readBool(offsets[15]),
     volume: reader.readDouble(offsets[16]),
   );
+  object.id = id;
   return object;
 }
 
@@ -250,7 +250,7 @@ const _AlarmplaybackModeValueEnumMap = {
 };
 
 Id _alarmGetId(Alarm object) {
-  return object.id ?? Isar.autoIncrement;
+  return object.id;
 }
 
 List<IsarLinkBase<dynamic>> _alarmGetLinks(Alarm object) {
@@ -647,23 +647,7 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'id',
-      ));
-    });
-  }
-
-  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'id',
-      ));
-    });
-  }
-
-  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idEqualTo(Id? value) {
+  QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'id',
@@ -673,7 +657,7 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
   }
 
   QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idGreaterThan(
-    Id? value, {
+    Id value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -686,7 +670,7 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
   }
 
   QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idLessThan(
-    Id? value, {
+    Id value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -699,8 +683,8 @@ extension AlarmQueryFilter on QueryBuilder<Alarm, Alarm, QFilterCondition> {
   }
 
   QueryBuilder<Alarm, Alarm, QAfterFilterCondition> idBetween(
-    Id? lower,
-    Id? upper, {
+    Id lower,
+    Id upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {

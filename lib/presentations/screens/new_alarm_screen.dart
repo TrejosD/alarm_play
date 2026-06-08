@@ -53,6 +53,7 @@ class AlarmWidget extends ConsumerStatefulWidget {
 
 class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   TimeOfDay? selectedTime;
+  late int id;
   late bool vibrar;
   late bool playOnce;
   late bool autoStop;
@@ -69,6 +70,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   @override
   void initState() {
     super.initState();
+    id = widget.alarm.id;
     selectedDays = widget.alarm.repeatDays;
     vibrar = widget.alarm.vibrateEnabled;
     playOnce = widget.alarm.playOnce;

@@ -9,6 +9,6 @@ class Playlist {
 
   late String name;
   late DateTime createAt;
-
+  @ignore
   late List<AudioTrack>? tracks;
 }

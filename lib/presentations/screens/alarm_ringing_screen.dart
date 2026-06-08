@@ -53,7 +53,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
     if (alarm!.playOnce) {
       await controller.deleteAlarm(alarm.id);
     } else {
-      await controller.onAlarmTriggered(alarm.id!);
+      await controller.onAlarmTriggered(alarm.id);
     }
     if (mounted) {
       Navigator.of(context).pop();

@@ -25,11 +25,26 @@ void main() async {
     navigatorKey.currentState?.push(MaterialPageRoute(
         builder: (_) => AlarmRingingScreen(alarmId: alarmId)));
   });
+  final notificationDetails =
+      await notifications.getNotificationAppLaunchDetails();
+  if (notificationDetails?.didNotificationLaunchApp ?? false) {
+    final payload = notificationDetails!.notificationResponse?.payload;
+    if (payload != null) {
+      final alarmId = int.parse(payload);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        navigatorKey.currentState?.push(MaterialPageRoute(
+          builder: (context) => AlarmRingingScreen(alarmId: alarmId),
+        ));
+      });
+    }
+  }
   final container = ProviderContainer();
   final pending = await notifications.pendingNotificationRequests();
   for (final notification in pending) {
     print('Pending Notification ${notification.id}');
+    print('Notification info: ${notification.body}');
   }
+  await notificationService.checkExactAlarmPermission();
 
   await container.read(alarmRestoreProvider).restoreAllActiveAlarms();
   runApp(UncontrolledProviderScope(container: container, child: MyApp()));

@@ -12,8 +12,10 @@ class AlarmSchedulerService {
 
   Future<void> scheduleAlarm(Alarm alarm) async {
     if (alarm.nextTrigger == null) return;
+    final scheduledDate = tz.TZDateTime.from(alarm.nextTrigger!, tz.local);
+    final int idNotification = alarm.id & 0xFFFFFFFF;
     await notifications.zonedSchedule(
-      id: alarm.id ?? 1,
+      id: idNotification,
       title: 'Alarm',
       body: alarm.label ?? 'Wake up',
       scheduledDate: tz.TZDateTime.from(alarm.nextTrigger!, tz.local),
@@ -22,6 +24,7 @@ class AlarmSchedulerService {
               importance: Importance.max,
               priority: Priority.high,
               fullScreenIntent: true,
+              audioAttributesUsage: AudioAttributesUsage.alarm,
               category: AndroidNotificationCategory.alarm,
               playSound: false,
               enableVibration: alarm.vibrateEnabled,
@@ -29,9 +32,22 @@ class AlarmSchedulerService {
               autoCancel: false,
               visibility: NotificationVisibility.public)),
       payload: alarm.id.toString(),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.alarmClock,
       matchDateTimeComponents: null,
     );
+    print('Scheduled: ${scheduledDate}');
+    print('Now: ${tz.TZDateTime.now(tz.local)}');
+    print(
+        'Difference: ${scheduledDate.difference(tz.TZDateTime.now(tz.local))}');
+    checkPendigNotification();
+  }
+
+  Future<void> checkPendigNotification() async {
+    final pending = await notifications.pendingNotificationRequests();
+    print('Pending notification List ${pending.length}');
+    for (final p in pending) {
+      print('Pending notification id: ${p.id}');
+    }
   }
 
   Future<void> showNotification(int id) async {
@@ -42,6 +58,7 @@ class AlarmSchedulerService {
         notificationDetails: NotificationDetails(
             android: AndroidNotificationDetails('alarm-channel', 'alarm',
                 importance: Importance.high,
+                fullScreenIntent: true,
                 ongoing: true,
                 playSound: true,
                 category: AndroidNotificationCategory.alarm,

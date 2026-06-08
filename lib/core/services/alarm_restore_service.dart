@@ -13,11 +13,14 @@ class AlarmRestoreService {
     final alarms = isar.alarms.filter().isActiveEqualTo(true).findAll();
 
     for (final alarm in await alarms) {
+      print('Restoring alarm id: ${alarm.id}');
+      print('Active ${alarm.isActive}');
+      print('Next ${alarm.nextTrigger}');
       try {
         // recalcular siempre
         alarm.updateNextTrigger();
         // cancelar las alarmas pendientes
-        await alarmScheduler.cancel(alarm.id!);
+        await alarmScheduler.cancel(alarm.id);
         // guardar nuevo trigger
         await isar.writeTxn(() async {
           await isar.alarms.put(alarm);

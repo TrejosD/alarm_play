@@ -5,7 +5,7 @@ part 'alarm_entity.g.dart';
 @collection
 class Alarm {
   // id lo ingresa Isar
-  Id? id = Isar.autoIncrement;
+  Id id = Isar.autoIncrement;
   // label no es necesario, podemos utilizarlo para indentificacion futura, como un identifier para el usuario
   String? label;
 // horario de la alerta
@@ -43,8 +43,7 @@ class Alarm {
   DateTime? nextTrigger;
 
   Alarm(
-      {this.id,
-      this.label,
+      {this.label,
       required this.hour,
       required this.minute,
       required this.createdAt,
@@ -82,7 +81,6 @@ class Alarm {
           int? autoStopAfterMinutes,
           DateTime? nextTrigger}) =>
       Alarm(
-          id: id ?? this.id,
           label: label ?? this.label,
           hour: hour ?? this.hour,
           minute: minute ?? this.minute,
