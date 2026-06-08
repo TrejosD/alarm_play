@@ -27,6 +27,11 @@ class AlarmReceiver : BroadcastReceiver(){
             context,
             serviceIntent
         )
+
+        Log.d(
+            "ALARM_APP",
+            "ForegroundService requested"
+        )
     }
 }
 

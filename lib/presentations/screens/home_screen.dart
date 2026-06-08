@@ -1,4 +1,5 @@
 import 'package:alarm_play/core/providers/alarm_provider.dart';
+import 'package:alarm_play/core/services/alarm_bridge_service.dart';
 import 'package:alarm_play/core/services/alarm_scheduler_service.dart';
 import 'package:alarm_play/presentations/screens/new_alarm_screen.dart';
 import 'package:alarm_play/presentations/widgets/alarm_card.dart';
@@ -56,22 +57,20 @@ class HomeScreen extends ConsumerWidget {
               ),
           loading: () => Center(child: CircularProgressIndicator())),
       // Probar Notificationes Local
-      // floatingActionButton: FloatingActionButton(
-      //     onPressed: () {
-      //       final notifications = FlutterLocalNotificationsPlugin();
-      //       final service = AlarmSchedulerService(notifications);
-      //       service.showNotification(1);
-      //       print('Notification Executed');
-      //     },
-      //     child: Text('Notificacion')),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (context) => NewAlarmScreen(),
-          ));
-        },
-        child: Icon(Icons.add_alarm_rounded),
-      ),
+          onPressed: () async {
+            await AlarmBridgeService.triggerAlarm();
+            print('Trigger Alarm Executed');
+          },
+          child: Text('trigger Alarm')),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     Navigator.of(context).push(MaterialPageRoute(
+      //       builder: (context) => NewAlarmScreen(),
+      //     ));
+      //   },
+      //   child: Icon(Icons.add_alarm_rounded),
+      // ),
     );
   }
 

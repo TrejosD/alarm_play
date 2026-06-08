@@ -1,5 +1,8 @@
 package com.example.alarm_play
 
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugin.common.MethodChannel
+import com.example.alarm_play.channels.AlarmMethodChannel
 import android.content.Intent
 import android.os.Bundle
 import com.example.alarm_play.alarm.AlarmForegroundService
@@ -13,11 +16,18 @@ class MainActivity : AudioServiceActivity() {
         android.util.Log.d(
             "ALARM_APP",
             "MainActivity onCreate"
+        )  
+    }
+    
+    override fun configureFlutterEngine(flutterEngine:FlutterEngine){
+        super.configureFlutterEngine(
+            flutterEngine
         )
-        val intent = Intent(
-            this,
-            AlarmForegroundService::class.java
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "alarm_play/alarm"
+        ).setMethodCallHandler(
+            AlarmMethodChannel(this)
         )
-        startForegroundService(intent)
     }
 }
