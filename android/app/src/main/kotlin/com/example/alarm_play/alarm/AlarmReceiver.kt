@@ -15,13 +15,18 @@ class AlarmReceiver : BroadcastReceiver(){
             "ALARM_APP",
             "AlarmReceiver triggered"
         )
+        val alarmId = intent.getIntExtra(
+                "alarm_id",
+                -1
+            )
         val serviceIntent = Intent(
             context,
             AlarmForegroundService:: class.java
             )
+
         serviceIntent.putExtra(
             "alarm_id",
-            intent.getIntExtra("alarm_id", -1)
+            alarmId
         )
         ContextCompat.startForegroundService(
             context,

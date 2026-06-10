@@ -59,7 +59,10 @@ class HomeScreen extends ConsumerWidget {
       // Probar Notificationes Local
       floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            await AlarmBridgeService.triggerAlarm();
+            print('Button Pressed');
+            await AlarmBridgeService.scheduleAlarm(
+                alarmId: 1,
+                triggerTime: DateTime.now().add(Duration(seconds: 30)));
             print('Trigger Alarm Executed');
           },
           child: Text('trigger Alarm')),

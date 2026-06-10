@@ -7,4 +7,13 @@ class AlarmBridgeService {
   static Future<void> triggerAlarm() async {
     await _channel.invokeMethod('triggerAlarm');
   }
+
+  static Future<void> scheduleAlarm(
+      {required int alarmId, required DateTime triggerTime}) async {
+    print('scheduleAlarm desde alarmService');
+    await _channel.invokeMethod('scheduleAlarm', {
+      'alarmId': alarmId,
+      'triggerMillis': triggerTime.millisecondsSinceEpoch
+    });
+  }
 }

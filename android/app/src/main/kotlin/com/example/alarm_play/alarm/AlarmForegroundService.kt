@@ -1,5 +1,6 @@
 package com.example.alarm_play.alarm
 
+import com.example.alarm_play.channels.AlarmEventChannel
 import com.example.alarm_play.MainActivity
 import android.app.Notification
 import android.app.NotificationChannel
@@ -37,6 +38,10 @@ class AlarmForegroundService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.d(
+            "ALARM_APP",
+            "ForegroundService onCreate"
+        )
         createNotificationChannel()
         val intent = Intent(
     this,
@@ -56,7 +61,32 @@ startForegroundService(intent)
 
         Log.d(
             "ALARM_APP",
-            "ForegroundService started"
+            "ForegroundService onStartCommand"
+        )
+        val alarmId = intent?.getIntExtra(
+            "alarm_id",
+            -1
+        ) ?: -1
+        if(alarmId == -1){
+            Log.d(
+                "ALARM_APP",
+                "Ignoring invalid alarm"
+            )
+            return START_NOT_STICKY
+        }
+
+        Log.d(
+            "ALARM_APP",
+            "Alarm ID: $alarmId"
+        )
+
+        AlarmEventChannel.sentAlarmTriggered(
+            alarmId
+        )
+
+        Log.d(
+            "ALARM_APP",
+            "Alarm event sent"
         )
         
         acquireWakeLock()

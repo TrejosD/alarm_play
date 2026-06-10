@@ -1,6 +1,7 @@
 import 'package:alarm_play/core/db/isar_service.dart';
 import 'package:alarm_play/core/navigation/app_router.dart';
 import 'package:alarm_play/core/providers/alarm_restore_provider.dart';
+import 'package:alarm_play/core/services/alarm_event_service.dart';
 import 'package:alarm_play/core/services/notification_service.dart';
 import 'package:alarm_play/core/services/time_zone_service.dart';
 import 'package:alarm_play/presentations/screens/alarm_ringing_screen.dart';
@@ -45,6 +46,14 @@ void main() async {
     print('Notification info: ${notification.body}');
   }
   await notificationService.checkExactAlarmPermission();
+
+  final eventService = AlarmEventService();
+
+  eventService.alarmStream.listen((alarmId) {
+    navigatorKey.currentState?.push(MaterialPageRoute(
+      builder: (context) => AlarmRingingScreen(alarmId: alarmId),
+    ));
+  });
 
   await container.read(alarmRestoreProvider).restoreAllActiveAlarms();
   runApp(UncontrolledProviderScope(container: container, child: MyApp()));
