@@ -1,53 +1,60 @@
+import 'package:alarm_play/core/controllers/alarm_controller_provider.dart';
+import 'package:alarm_play/core/db/isar_service.dart';
+import 'package:alarm_play/core/services/alarm_bridge_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/timezone.dart' as tz;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/entities/entities.dart';
 
 class AlarmSchedulerService {
   final FlutterLocalNotificationsPlugin notifications;
-
-  AlarmSchedulerService(this.notifications);
-
-  // todo filtrar si el schedule date sera antes de hoy y sumarle un dia
+  final isar = IsarService.instance;
+  final Ref ref;
+  AlarmSchedulerService(this.notifications, this.ref);
 
   Future<void> scheduleAlarm(Alarm alarm) async {
-    if (alarm.nextTrigger == null) return;
-    final scheduledDate = tz.TZDateTime.from(alarm.nextTrigger!, tz.local);
-    final int idNotification = alarm.id & 0xFFFFFFFF;
-    await notifications.zonedSchedule(
-      id: idNotification,
-      title: 'Alarm',
-      body: alarm.label ?? 'Wake up',
-      scheduledDate: tz.TZDateTime.from(alarm.nextTrigger!, tz.local),
-      notificationDetails: NotificationDetails(
-          android: AndroidNotificationDetails('alarm_channel', 'alarms',
-              importance: Importance.max,
-              priority: Priority.high,
-              fullScreenIntent: true,
-              audioAttributesUsage: AudioAttributesUsage.alarm,
-              category: AndroidNotificationCategory.alarm,
-              playSound: false,
-              enableVibration: alarm.vibrateEnabled,
-              ongoing: true,
-              autoCancel: false,
-              visibility: NotificationVisibility.public)),
-      payload: alarm.id.toString(),
-      androidScheduleMode: AndroidScheduleMode.alarmClock,
-      matchDateTimeComponents: null,
-    );
-    print('Scheduled: ${scheduledDate}');
-    print('Now: ${tz.TZDateTime.now(tz.local)}');
-    print(
-        'Difference: ${scheduledDate.difference(tz.TZDateTime.now(tz.local))}');
-    checkPendigNotification();
+    if (!alarm.isActive) return;
+    final nextTrigger = alarm.nextTrigger;
+    if (nextTrigger == null) return;
+
+    await AlarmBridgeService.scheduleAlarm(
+        alarmId: alarm.id, triggerTime: nextTrigger);
   }
 
-  Future<void> checkPendigNotification() async {
-    final pending = await notifications.pendingNotificationRequests();
-    print('Pending notification List ${pending.length}');
-    for (final p in pending) {
-      print('Pending notification id: ${p.id}');
+  // Future<void> checkPendigNotification() async {
+  //   final pending = await notifications.pendingNotificationRequests();
+  //   print('Pending notification List ${pending.length}');
+  //   for (final p in pending) {
+  //     print('Pending notification id: ${p.id}');
+  //   }
+  // }
+
+  Future<void> cancelAlarm(int alarmId) async {
+    await AlarmBridgeService.cancelAlarm(alarmId: alarmId);
+  }
+
+  Future<void> onAlarmFinished(Alarm alarm) async {
+    late final Alarm updateAlarm;
+    // sonar una vez y eliminar
+    if (alarm.playOnce) {
+      await ref.read(alarmControllerProvider).deleteAlarm(alarm.id);
+      return;
     }
+    // sonar y desactivar
+    if (alarm.repeatDays.isEmpty) {
+      updateAlarm = alarm.copyWith(isActive: false);
+    } else {
+      // sonar y recalcular nuevo trigger
+      alarm.calculateNextTrigger();
+      final nextTrigger = alarm.calculateNextTrigger();
+      updateAlarm = alarm.copyWith(nextTrigger: nextTrigger);
+      await scheduleAlarm(updateAlarm);
+    }
+    await isar.writeTxn(() async {
+      await isar.alarms.put(updateAlarm);
+    });
+    print('Desde onAlarmFinished - alarm: ${alarm.nextTrigger}');
+    print('Desde onAlarmFinished - updated: ${updateAlarm.nextTrigger}');
   }
 
   Future<void> showNotification(int id) async {
@@ -66,22 +73,4 @@ class AlarmSchedulerService {
                 visibility: NotificationVisibility.public)),
         payload: '123');
   }
-
-  Future<void> cancel(int id) async {
-    await notifications.cancel(id: id);
-  }
-
-  Future<void> cancelAll() async {
-    await notifications.cancelAll();
-  }
-
-  // DateTime _nextInstance(Alarm alarm) {
-  //   final now = DateTime.now();
-  //   var scheduled =
-  //       DateTime(now.year, now.month, now.day, alarm.hour, alarm.minute);
-  //   if (scheduled.isBefore(now)) {
-  //     scheduled = scheduled.add(Duration(days: 1));
-  //   }
-  //   return scheduled;
-  // }
 }

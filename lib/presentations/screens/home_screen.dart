@@ -57,23 +57,22 @@ class HomeScreen extends ConsumerWidget {
               ),
           loading: () => Center(child: CircularProgressIndicator())),
       // Probar Notificationes Local
-      floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            print('Button Pressed');
-            await AlarmBridgeService.scheduleAlarm(
-                alarmId: 1,
-                triggerTime: DateTime.now().add(Duration(seconds: 30)));
-            print('Trigger Alarm Executed');
-          },
-          child: Text('trigger Alarm')),
       // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     Navigator.of(context).push(MaterialPageRoute(
-      //       builder: (context) => NewAlarmScreen(),
-      //     ));
-      //   },
-      //   child: Icon(Icons.add_alarm_rounded),
-      // ),
+      //     onPressed: () async {
+      //       await AlarmBridgeService.scheduleAlarm(
+      //           alarmId: 1,
+      //           triggerTime: DateTime.now().add(Duration(seconds: 30)));
+      //       print('Trigger Alarm Executed');
+      //     },
+      //     child: Text('trigger Alarm')),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => NewAlarmScreen(),
+          ));
+        },
+        child: Icon(Icons.add_alarm_rounded),
+      ),
     );
   }
 

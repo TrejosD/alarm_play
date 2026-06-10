@@ -50,11 +50,8 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
     final controller = ref.read(alarmControllerProvider);
     await ref.read(audioServiceProvider).stop();
     await ref.read(vibrationServiceProvider).stop();
-    if (alarm!.playOnce) {
-      await controller.deleteAlarm(alarm.id);
-    } else {
-      await controller.onAlarmTriggered(alarm.id);
-    }
+    if (alarm == null) return;
+    await controller.stopAlarm(alarm);
     if (mounted) {
       Navigator.of(context).pop();
     }

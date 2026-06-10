@@ -25,6 +25,13 @@ class AlarmMethodChannel(
                 result.success(true)
             }
 
+            "cancelAlarm" -> {
+                val alarmId = call.argument<Int>("alarmId")
+                ?: return
+                cancelAlarm(alarmId)
+                result.success(true)
+            }
+            
             "triggerAlarm" -> {
                 val receiver = AlarmReceiver()
                 receiver.onReceive(
@@ -35,7 +42,9 @@ class AlarmMethodChannel(
             else -> {
                 result.notImplemented()
             }
+            
         }
+        
     }
 
     private fun scheduleAlarm(
@@ -74,6 +83,33 @@ class AlarmMethodChannel(
         android.util.Log.d(
             "ALARM_APP",
             "Alarm Scheduled: $alarmId"
+        )
+    }
+
+    private fun cancelAlarm(alarmId: Int){
+        val alarmManager = context.getSystemService(
+            Context.ALARM_SERVICE
+        ) as AlarmManager
+
+        val intent = Intent(
+            context,
+            AlarmReceiver::class.java
+        )
+        val pendingIntent =
+        PendingIntent.getBroadcast(
+            context,
+            alarmId,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or
+            PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(
+            pendingIntent
+        )
+
+        android.util.Log.d(
+            "ALARM_APP",
+            "Alarm cancelled $alarmId"
         )
     }
 }

@@ -112,9 +112,6 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
             selectedTime = TimeOfDay(
                 hour: DateTime.now().hour, minute: DateTime.now().minute)
           };
-      final trigeredAlarm = widget.alarm
-          .copyWith(hour: selectedTime!.hour, minute: selectedTime!.minute);
-      final nexTrigger = trigeredAlarm.calculateNextTrigger();
       final alarm = widget.alarm.copyWith(
           hour: selectedTime!.hour,
           minute: selectedTime!.minute,
@@ -123,7 +120,6 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
           autoStop: autoStop,
           autoStopAfterMinutes: autoStopAfter,
           isActive: true,
-          nextTrigger: nexTrigger,
           playOnce: playOnce,
           playbackMode: playBackMode,
           repeatDays: selectedDays,
@@ -132,9 +128,6 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
           vibrateEnabled: vibrar,
           volume: volume);
       ref.read(alarmControllerProvider).createAlarm(alarm);
-      ref.read(alarmControllerProvider).scheduleAlarm(alarm);
-      alarm.calculateNextTrigger();
-      print('Next trigger ${alarm.nextTrigger}');
       if (mounted) {
         Navigator.of(context).pop();
       }
