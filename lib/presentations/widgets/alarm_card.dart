@@ -20,7 +20,7 @@ class AlarmCard extends ConsumerWidget {
     return ListTile(
       leading: IconButton(
         onPressed: () {
-          ref.read(alarmControllerProvider).deleteAlarm(alarm.id);
+          ref.read(alarmControllerProvider).deleteAlarm(alarm.id!);
         },
         icon: Icon(Icons.delete_forever_outlined),
       ),

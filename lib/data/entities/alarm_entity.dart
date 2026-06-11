@@ -5,7 +5,7 @@ part 'alarm_entity.g.dart';
 @collection
 class Alarm {
   // id lo ingresa Isar
-  Id id = Isar.autoIncrement;
+  Id? id = Isar.autoIncrement;
   // label no es necesario, podemos utilizarlo para indentificacion futura, como un identifier para el usuario
   String? label;
 // horario de la alerta
@@ -43,7 +43,8 @@ class Alarm {
   DateTime? nextTrigger;
 
   Alarm(
-      {this.label,
+      {this.id,
+      this.label,
       required this.hour,
       required this.minute,
       required this.createdAt,
@@ -193,6 +194,7 @@ extension AlarmScheduling on Alarm {
   }
 }
 
+// todo de momento no utilizar este metodo
 extension AlarmLifecycle on Alarm {
   void updateNextTrigger() {
     // nextTrigger = calculateNextTrigger(Alarm());

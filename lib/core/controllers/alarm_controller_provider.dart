@@ -36,7 +36,7 @@ class AlarmController {
       });
       await scheduleAlarm(alarm);
     } else {
-      await scheduler.cancelAlarm(alarm.id);
+      await scheduler.cancelAlarm(alarm.id!);
       await isar.writeTxn(() async {
         await isar.alarms.put(alarm);
       });
@@ -68,7 +68,7 @@ class AlarmController {
   }
 
   Future<void> stopAlarm(Alarm alarm) async {
-    await scheduler.cancelAlarm(alarm.id);
+    await scheduler.cancelAlarm(alarm.id!);
     await scheduler.onAlarmFinished(alarm);
   }
 }

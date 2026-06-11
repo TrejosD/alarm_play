@@ -18,7 +18,7 @@ class AlarmSchedulerService {
     if (nextTrigger == null) return;
 
     await AlarmBridgeService.scheduleAlarm(
-        alarmId: alarm.id, triggerTime: nextTrigger);
+        alarmId: alarm.id!, triggerTime: nextTrigger);
   }
 
   // Future<void> checkPendigNotification() async {
@@ -33,28 +33,25 @@ class AlarmSchedulerService {
     await AlarmBridgeService.cancelAlarm(alarmId: alarmId);
   }
 
+// todo revisar el nextTrigger se ejecute correctamente
   Future<void> onAlarmFinished(Alarm alarm) async {
-    late final Alarm updateAlarm;
     // sonar una vez y eliminar
     if (alarm.playOnce) {
-      await ref.read(alarmControllerProvider).deleteAlarm(alarm.id);
+      await ref.read(alarmControllerProvider).deleteAlarm(alarm.id!);
       return;
     }
     // sonar y desactivar
     if (alarm.repeatDays.isEmpty) {
-      updateAlarm = alarm.copyWith(isActive: false);
+      alarm.isActive = false;
     } else {
       // sonar y recalcular nuevo trigger
       alarm.calculateNextTrigger();
-      final nextTrigger = alarm.calculateNextTrigger();
-      updateAlarm = alarm.copyWith(nextTrigger: nextTrigger);
-      await scheduleAlarm(updateAlarm);
+      await scheduleAlarm(alarm);
     }
     await isar.writeTxn(() async {
-      await isar.alarms.put(updateAlarm);
+      await isar.alarms.put(alarm);
     });
     print('Desde onAlarmFinished - alarm: ${alarm.nextTrigger}');
-    print('Desde onAlarmFinished - updated: ${updateAlarm.nextTrigger}');
   }
 
   Future<void> showNotification(int id) async {

@@ -11,16 +11,13 @@ class AlarmRestoreService {
 
   Future<void> restoreAllActiveAlarms() async {
     final alarms = isar.alarms.filter().isActiveEqualTo(true).findAll();
-
+// todo revisar este metodo, ya que fue hecho para LocalNotification. *-* Actualizarlo
     for (final alarm in await alarms) {
-      print('Restoring alarm id: ${alarm.id}');
-      print('Active ${alarm.isActive}');
-      print('Next ${alarm.nextTrigger}');
       try {
         // recalcular siempre
         alarm.updateNextTrigger();
         // cancelar las alarmas pendientes
-        await alarmScheduler.cancelAlarm(alarm.id);
+        await alarmScheduler.cancelAlarm(alarm.id!);
         // guardar nuevo trigger
         await isar.writeTxn(() async {
           await isar.alarms.put(alarm);
