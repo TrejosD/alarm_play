@@ -17,13 +17,12 @@ class AlarmController {
   AlarmSchedulerService get scheduler => ref.read(alarmSchedulerProvider);
 
   Future<void> createAlarm(Alarm alarm) async {
-    final trigger = alarm.calculateNextTrigger();
-    final newAlarm = alarm.copyWith(nextTrigger: trigger);
+    alarm.updateNextTrigger();
     await isar.writeTxn(() async {
-      await isar.alarms.put(newAlarm);
+      await isar.alarms.put(alarm);
     });
     if (alarm.isActive) {
-      await scheduleAlarm(newAlarm);
+      await scheduleAlarm(alarm);
     }
   }
 

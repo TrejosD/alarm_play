@@ -3,9 +3,11 @@ package com.example.alarm_play.alarm
 import com.example.alarm_play.channels.AlarmEventChannel
 import com.example.alarm_play.MainActivity
 import android.app.Notification
+import androidx.core.app.NotificationCompat
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.app.PendingIntent
 import android.content.Intent
 import android.os.Build
 import android.os.PowerManager
@@ -20,14 +22,10 @@ class AlarmForegroundService : Service() {
         const val CHANNEL_ID = "alarm_foreground"
     }
 
+
     private fun acquireWakeLock(){
         val powerManager = 
         getSystemService(POWER_SERVICE) as PowerManager
-
-        Log.d(
-            "ALARM_APP",
-            "Wakelock acquired"
-        )
 
         wakeLock = powerManager.newWakeLock(
             PowerManager.PARTIAL_WAKE_LOCK,
@@ -38,10 +36,7 @@ class AlarmForegroundService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(
-            "ALARM_APP",
-            "ForegroundService onCreate"
-        )
+
         createNotificationChannel()
         val intent = Intent(
     this,
@@ -59,52 +54,49 @@ startForegroundService(intent)
         startId: Int
     ): Int {
 
-        Log.d(
-            "ALARM_APP",
-            "ForegroundService onStartCommand"
+
+        val fullScreenPendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or
+            PendingIntent.FLAG_IMMUTABLE
         )
+
+        val notification = NotificationCompat.Builder(
+            this,
+            CHANNEL_ID
+        )
+            .setContentTitle("Alarm Service")
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setFullScreenIntent(fullScreenPendingIntent, true)
+            .setContentText("Alarm running")
+            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
+            .build()
+        
+
         val alarmId = intent?.getIntExtra(
             "alarm_id",
             -1
         ) ?: -1
         if(alarmId == -1){
-            Log.d(
-                "ALARM_APP",
-                "Ignoring invalid alarm"
-            )
+            
             return START_NOT_STICKY
         }
-
-        Log.d(
-            "ALARM_APP",
-            "Alarm ID: $alarmId"
+        startForeground(
+            alarmId,
+            notification
         )
+
 
         AlarmEventChannel.sentAlarmTriggered(
             alarmId
         )
-
-        Log.d(
-            "ALARM_APP",
-            "Alarm event sent"
-        )
         
         acquireWakeLock()
-        launchAlarmActivity()
+        launchAlarmActivity(alarmId)
 
-        val notification = Notification.Builder(
-            this,
-            CHANNEL_ID
-        )
-            .setContentTitle("Alarm Service")
-            .setContentText("Alarm running")
-            .setSmallIcon(android.R.drawable.ic_lock_idle_alarm)
-            .build()
-
-        startForeground(
-            999,
-            notification
-        )
 
         return START_STICKY
     }
@@ -130,21 +122,28 @@ startForegroundService(intent)
         }
     }
 
-    private fun launchAlarmActivity(){
+    private fun launchAlarmActivity(alarmId: Int){
+        
         val intent = Intent(
             this,
             MainActivity::class.java
-        )
-        intent.addFlags(
-            Intent.FLAG_ACTIVITY_NEW_TASK or
-            Intent.FLAG_ACTIVITY_SINGLE_TOP or
-            Intent.FLAG_ACTIVITY_CLEAR_TOP
-        )
+        ).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            putExtra("alarm_id", alarmId)
+        }
+        
+
+        try{
         startActivity(intent)
-        Log.d(
+        
+        }catch(e: Exception){
+        android.util.Log.d(
             "ALARM_APP",
-            "MainActivity launch"
+            "Error launching Activity",
+            e
         )
+        }
+        
     }
 
     override fun onDestroy(){

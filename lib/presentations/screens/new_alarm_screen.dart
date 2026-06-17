@@ -110,22 +110,22 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
             selectedTime = TimeOfDay(
                 hour: DateTime.now().hour, minute: DateTime.now().minute)
           };
-      final alarm = widget.alarm.copyWith(
-          hour: selectedTime!.hour,
-          minute: selectedTime!.minute,
-          ascendingVolume: ascendingVolume,
-          assetPath: 'assets/audiofiles/alarm.mp3',
-          autoStop: autoStop,
-          autoStopAfterMinutes: autoStopAfter,
-          isActive: true,
-          playOnce: playOnce,
-          playbackMode: playBackMode,
-          repeatDays: selectedDays,
-          snoozeMinutes: snoozeMinutes,
-          updatedAt: DateTime.now(),
-          vibrateEnabled: vibrar,
-          volume: volume);
-      ref.read(alarmControllerProvider).createAlarm(alarm);
+      widget.alarm.hour = selectedTime!.hour;
+      widget.alarm.minute = selectedTime!.minute;
+      widget.alarm.ascendingVolume = ascendingVolume;
+      widget.alarm.assetPath;
+      widget.alarm.id = widget.alarm.id;
+      widget.alarm.autoStop = autoStop;
+      widget.alarm.autoStopAfterMinutes = autoStopAfter;
+      widget.alarm.isActive = true;
+      widget.alarm.playOnce = playOnce;
+      widget.alarm.playbackMode = playBackMode;
+      widget.alarm.repeatDays = selectedDays;
+      widget.alarm.snoozeMinutes = snoozeMinutes;
+      widget.alarm.vibrateEnabled = vibrar;
+      widget.alarm.volume = volume;
+
+      ref.read(alarmControllerProvider).createAlarm(widget.alarm);
       if (mounted) {
         Navigator.of(context).pop();
       }

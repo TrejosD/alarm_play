@@ -1,6 +1,7 @@
 import 'package:alarm_play/core/providers/alarm_provider.dart';
 import 'package:alarm_play/core/services/alarm_bridge_service.dart';
 import 'package:alarm_play/core/services/alarm_scheduler_service.dart';
+import 'package:alarm_play/core/services/notification_service.dart';
 import 'package:alarm_play/presentations/screens/new_alarm_screen.dart';
 import 'package:alarm_play/presentations/widgets/alarm_card.dart';
 import 'package:flutter/material.dart';
@@ -27,11 +28,12 @@ class HomeScreen extends ConsumerWidget {
               child: ListView.builder(
                 itemCount: alarms.length,
                 itemBuilder: (context, index) {
+                  final thisAlarm = alarms[index];
                   return GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => NewAlarmScreen(
-                          alarm: alarms[index],
+                          alarm: thisAlarm,
                         ),
                       ));
                     },
@@ -39,11 +41,13 @@ class HomeScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(vertical: 6),
                       child: Container(
                         decoration: BoxDecoration(
-                          color: Colors.black12,
+                          color: thisAlarm.playOnce
+                              ? Colors.red.shade200
+                              : Colors.black12,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: AlarmCard(
-                          alarm: alarms[index],
+                          alarm: thisAlarm,
                         ),
                       ),
                     ),
@@ -61,8 +65,7 @@ class HomeScreen extends ConsumerWidget {
       //     onPressed: () async {
       //       await AlarmBridgeService.scheduleAlarm(
       //           alarmId: 1,
-      //           triggerTime: DateTime.now().add(Duration(seconds: 30)));
-      //       print('Trigger Alarm Executed');
+      //           triggerTime: DateTime.now().add(Duration(seconds: 15)));
       //     },
       //     child: Text('trigger Alarm')),
       floatingActionButton: FloatingActionButton(

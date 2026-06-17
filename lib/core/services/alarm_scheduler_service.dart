@@ -20,7 +20,31 @@ class AlarmSchedulerService {
     await AlarmBridgeService.scheduleAlarm(
         alarmId: alarm.id!, triggerTime: nextTrigger);
   }
-
+  // Future<void> scheduleAlarm(Alarm alarm) async {
+  //   print('Scheduled alarm ${alarm.id}');
+  //   print('nextTrigger ${alarm.nextTrigger}');
+  //   if (alarm.nextTrigger == null) return;
+  //   await notifications.zonedSchedule(
+  //     id: alarm.id ?? 1,
+  //     title: 'Alarm',
+  //     body: alarm.label ?? 'Wake up',
+  //     scheduledDate: tz.TZDateTime.from(alarm.nextTrigger!, tz.local),
+  //     notificationDetails: NotificationDetails(
+  //         android: AndroidNotificationDetails('alarm_channel', 'alarms',
+  //             importance: Importance.max,
+  //             priority: Priority.high,
+  //             fullScreenIntent: true,
+  //             category: AndroidNotificationCategory.alarm,
+  //             playSound: false,
+  //             enableVibration: alarm.vibrateEnabled,
+  //             ongoing: true,
+  //             autoCancel: false,
+  //             visibility: NotificationVisibility.public)),
+  //     payload: alarm.id.toString(),
+  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+  //     matchDateTimeComponents: null,
+  //   );
+  // }
   // Future<void> checkPendigNotification() async {
   //   final pending = await notifications.pendingNotificationRequests();
   //   print('Pending notification List ${pending.length}');
@@ -33,7 +57,6 @@ class AlarmSchedulerService {
     await AlarmBridgeService.cancelAlarm(alarmId: alarmId);
   }
 
-// todo revisar el nextTrigger se ejecute correctamente
   Future<void> onAlarmFinished(Alarm alarm) async {
     // sonar una vez y eliminar
     if (alarm.playOnce) {
@@ -45,13 +68,12 @@ class AlarmSchedulerService {
       alarm.isActive = false;
     } else {
       // sonar y recalcular nuevo trigger
-      alarm.calculateNextTrigger();
+      alarm.updateNextTrigger();
       await scheduleAlarm(alarm);
     }
     await isar.writeTxn(() async {
       await isar.alarms.put(alarm);
     });
-    print('Desde onAlarmFinished - alarm: ${alarm.nextTrigger}');
   }
 
   Future<void> showNotification(int id) async {
@@ -61,8 +83,9 @@ class AlarmSchedulerService {
         body: 'Notificacion Exitosa',
         notificationDetails: NotificationDetails(
             android: AndroidNotificationDetails('alarm-channel', 'alarm',
-                importance: Importance.high,
+                importance: Importance.max,
                 fullScreenIntent: true,
+                priority: Priority.max,
                 ongoing: true,
                 playSound: true,
                 category: AndroidNotificationCategory.alarm,

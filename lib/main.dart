@@ -47,9 +47,11 @@ void main() async {
   }
   await notificationService.checkExactAlarmPermission();
 
-  final eventService = AlarmEventService();
-
-  eventService.alarmStream.listen((alarmId) {
+// Listener que al escuchar una alarma ejecuta la navegacion
+  final alarmEventService = AlarmEventService();
+  alarmEventService.alarmStream.listen((alarmId) {
+    print('Event Received $alarmId');
+    print('Navigator mounted: ${navigatorKey.currentState != null}');
     navigatorKey.currentState?.push(MaterialPageRoute(
       builder: (context) => AlarmRingingScreen(alarmId: alarmId),
     ));

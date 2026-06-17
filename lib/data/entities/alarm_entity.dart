@@ -194,10 +194,10 @@ extension AlarmScheduling on Alarm {
   }
 }
 
-// todo de momento no utilizar este metodo
+// llamar este metodo para actualizar las alarmas NextTrigger
 extension AlarmLifecycle on Alarm {
   void updateNextTrigger() {
-    // nextTrigger = calculateNextTrigger(Alarm());
+    nextTrigger = this.calculateNextTrigger();
     updatedAt = DateTime.now();
   }
 }
