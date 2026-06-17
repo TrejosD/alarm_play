@@ -101,5 +101,3 @@ metodo detener alarma deslisando sobre la pantalla.
   acompañar un texto explicando como detener la alarma
 boton para pausar la alarma, metodo on longpress pausa la alarma el tiempo se que haya seteado previamente
  */
-
-// todo necesito aca, los metodos play() para reproducir el sonido

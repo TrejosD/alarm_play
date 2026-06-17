@@ -13,19 +13,24 @@ import 'package:just_audio_background/just_audio_background.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // metodo inicia el TImeZoneService
   await TimeZoneService.init();
+  // metodo inicia el ISarService
   await IsarService.init();
+  // Metodo inicia el JustAudio para sonido en background
   await JustAudioBackground.init(
     androidNotificationChannelId: 'com.example.alarm_play',
     androidNotificationChannelName: 'alarm_audio',
     androidNotificationOngoing: true,
   );
+
   final notifications = FlutterLocalNotificationsPlugin();
   final notificationService = NotificationService(notifications);
   await notificationService.init(onAlarmTriggered: (alarmId) {
     navigatorKey.currentState?.push(MaterialPageRoute(
         builder: (_) => AlarmRingingScreen(alarmId: alarmId)));
   });
+  // todo de estos 3 metodos para la navegacion, ELIMINAR los que no sean necesarios
   final notificationDetails =
       await notifications.getNotificationAppLaunchDetails();
   if (notificationDetails?.didNotificationLaunchApp ?? false) {
@@ -40,18 +45,18 @@ void main() async {
     }
   }
   final container = ProviderContainer();
-  final pending = await notifications.pendingNotificationRequests();
-  for (final notification in pending) {
-    print('Pending Notification ${notification.id}');
-    print('Notification info: ${notification.body}');
-  }
+  // esto me muestra las notificationes pendientes, "que no fueron mostradas y quedaron pegadas"
+  // final pending = await notifications.pendingNotificationRequests();
+  // for (final notification in pending) {
+  //   print('Pending Notification ${notification.id}');
+  //   print('Notification info: ${notification.body}');
+  // }
+  // metodo para solicitar permisos, SOlO! si estos aun no fueron aceptados
   await notificationService.checkExactAlarmPermission();
 
 // Listener que al escuchar una alarma ejecuta la navegacion
   final alarmEventService = AlarmEventService();
   alarmEventService.alarmStream.listen((alarmId) {
-    print('Event Received $alarmId');
-    print('Navigator mounted: ${navigatorKey.currentState != null}');
     navigatorKey.currentState?.push(MaterialPageRoute(
       builder: (context) => AlarmRingingScreen(alarmId: alarmId),
     ));

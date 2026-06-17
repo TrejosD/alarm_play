@@ -1,11 +1,7 @@
 import 'package:alarm_play/core/providers/alarm_provider.dart';
-import 'package:alarm_play/core/services/alarm_bridge_service.dart';
-import 'package:alarm_play/core/services/alarm_scheduler_service.dart';
-import 'package:alarm_play/core/services/notification_service.dart';
 import 'package:alarm_play/presentations/screens/new_alarm_screen.dart';
 import 'package:alarm_play/presentations/widgets/alarm_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -78,17 +74,4 @@ class HomeScreen extends ConsumerWidget {
       ),
     );
   }
-
-  // estos metodos son la forma de usar el schedule alarm y el cancel alarm metiante el alarmSchedulerProvider.
-  // se instancia el provider en un objeto y con notacion de punto se utlizan sus metodos
-
-//   Future<void> scheduleAlarm(Alarm alarm) async {
-//   final scheduler = ref.read(alarmSchedulerProvider);
-//   await scheduler.schedule(alarm);
-// }
-
-// Future<void> cancelAlarm(int id) async {
-//   final scheduler = ref.read(alarmSchedulerProvider);
-//   await scheduler.cancel(id);
-// }
 }
