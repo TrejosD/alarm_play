@@ -1,14 +1,31 @@
 import 'package:alarm_play/core/providers/alarm_provider.dart';
+import 'package:alarm_play/core/services/notification_service.dart';
 import 'package:alarm_play/presentations/screens/new_alarm_screen.dart';
 import 'package:alarm_play/presentations/widgets/alarm_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    final notifications = FlutterLocalNotificationsPlugin();
+    final notificationService = NotificationService(notifications);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await notificationService.checkExactAlarmPermission(context);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final alarmAsync = ref.watch(alarmsProvider);
     return Scaffold(
       appBar: AppBar(title: Text('Alarm Play')),

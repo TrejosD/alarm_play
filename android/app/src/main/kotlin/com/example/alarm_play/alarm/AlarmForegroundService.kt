@@ -113,7 +113,9 @@ startForegroundService(intent)
                 CHANNEL_ID,
                 "Alarm Foreground",
                 NotificationManager.IMPORTANCE_HIGH
-            )
+            ).apply{
+                setBypassDnd(true)
+            }
 
             val manager =
                 getSystemService(NotificationManager::class.java)

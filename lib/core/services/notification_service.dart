@@ -1,13 +1,17 @@
 import 'dart:io';
 
+import 'package:alarm_play/presentations/widgets/xiaomi_permission_dialog.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotificationService {
   final FlutterLocalNotificationsPlugin plugin;
   static const _channel = MethodChannel('alarm_play/xiaomi');
+  static const String xiaomiPermissionKey = 'xiaomi_permissions_configured';
 
   NotificationService(this.plugin);
 
@@ -28,34 +32,29 @@ class NotificationService {
         });
   }
 
-  Future<void> checkExactAlarmPermission() async {
+  Future<void> checkExactAlarmPermission(BuildContext context) async {
+    if (!Platform.isAndroid) return;
+    var status = await Permission.scheduleExactAlarm.status;
+    if (status.isDenied) {
+      await Permission.scheduleExactAlarm.request();
+    }
+    print('Permission Exact Notification ${status.toString()}');
+
     final deviceInfo = DeviceInfoPlugin();
     final androidInfo = await deviceInfo.androidInfo;
-    if (androidInfo.manufacturer.toLowerCase().contains('xiaomi') ||
-        androidInfo.manufacturer.toLowerCase().contains('poco') ||
-        androidInfo.manufacturer.toLowerCase().contains('redmi')) {
-      await checkXiaomiPermissions();
-      print('xiaomi permission requested');
-    }
-    if (Platform.isAndroid) {
-      final androidPlugging = FlutterLocalNotificationsPlugin()
-          .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin>();
-      await androidPlugging!.requestNotificationsPermission();
-      final bool? exactPermission =
-          await androidPlugging.requestExactAlarmsPermission();
-      print('Exact permission status: ${exactPermission}');
-
-      final notification = await Permission.notification.status;
-      if (notification.isDenied) {
-        await Permission.notification.request();
+    final manufacturer = androidInfo.manufacturer.toLowerCase();
+    bool isXiaomi = manufacturer.toLowerCase().contains('xiaomi') ||
+        manufacturer.toLowerCase().contains('poco') ||
+        manufacturer.toLowerCase().contains('redmi');
+    if (isXiaomi) {
+      final prefs = await SharedPreferences.getInstance();
+      // si ya fue configurado terminamos
+      bool alreadyConfigurated = prefs.getBool(xiaomiPermissionKey) ?? false;
+      if (alreadyConfigurated) return;
+      // si no se a configurafo mostramos el dialogo
+      if (context.mounted) {
+        XioamiPermissionUserHandler.showXiaomiPermissionDialog(context, prefs);
       }
-      var status = await Permission.scheduleExactAlarm.status;
-      if (status.isDenied) {
-        await Permission.scheduleExactAlarm.request();
-      }
-      print('Permission Exact Notification ${status.toString()}');
-      print('Permission JST Notification ${notification.toString()}');
     }
   }
 

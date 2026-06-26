@@ -24,26 +24,26 @@ void main() async {
     androidNotificationOngoing: true,
   );
 
-  final notifications = FlutterLocalNotificationsPlugin();
-  final notificationService = NotificationService(notifications);
-  await notificationService.init(onAlarmTriggered: (alarmId) {
-    navigatorKey.currentState?.push(MaterialPageRoute(
-        builder: (_) => AlarmRingingScreen(alarmId: alarmId)));
-  });
+  // final notifications = FlutterLocalNotificationsPlugin();
+  // final notificationService = NotificationService(notifications);
+  // await notificationService.init(onAlarmTriggered: (alarmId) {
+  //   navigatorKey.currentState?.push(MaterialPageRoute(
+  //       builder: (_) => AlarmRingingScreen(alarmId: alarmId)));
+  // });
   // todo de estos 3 metodos para la navegacion, ELIMINAR los que no sean necesarios
-  final notificationDetails =
-      await notifications.getNotificationAppLaunchDetails();
-  if (notificationDetails?.didNotificationLaunchApp ?? false) {
-    final payload = notificationDetails!.notificationResponse?.payload;
-    if (payload != null) {
-      final alarmId = int.parse(payload);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        navigatorKey.currentState?.push(MaterialPageRoute(
-          builder: (context) => AlarmRingingScreen(alarmId: alarmId),
-        ));
-      });
-    }
-  }
+  // final notificationDetails =
+  //     await notifications.getNotificationAppLaunchDetails();
+  // if (notificationDetails?.didNotificationLaunchApp ?? false) {
+  //   final payload = notificationDetails!.notificationResponse?.payload;
+  //   if (payload != null) {
+  //     final alarmId = int.parse(payload);
+  //     WidgetsBinding.instance.addPostFrameCallback((_) {
+  //       navigatorKey.currentState?.push(MaterialPageRoute(
+  //         builder: (context) => AlarmRingingScreen(alarmId: alarmId),
+  //       ));
+  //     });
+  //   }
+  // }
   final container = ProviderContainer();
   // esto me muestra las notificationes pendientes, "que no fueron mostradas y quedaron pegadas"
   // final pending = await notifications.pendingNotificationRequests();
@@ -52,7 +52,6 @@ void main() async {
   //   print('Notification info: ${notification.body}');
   // }
   // metodo para solicitar permisos, SOlO! si estos aun no fueron aceptados
-  await notificationService.checkExactAlarmPermission();
 
 // Listener que al escuchar una alarma ejecuta la navegacion
   final alarmEventService = AlarmEventService();
