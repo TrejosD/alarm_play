@@ -16,6 +16,7 @@ import com.example.alarm_play.channels.XiaomiMethodChannel
 
 
 class MainActivity : AudioServiceActivity() {
+    private var pendingAlarmId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -23,18 +24,21 @@ class MainActivity : AudioServiceActivity() {
             "ALARM_APP",
             "MainActivity onCreate"
         )  
+        // Guardamos la accion si el app fue despertada por la alarma
+        handleIntent(intent)
         
-        // setShowWhenLocked(true)
-        // setTurnScreenOn(true)
+    }
 
-        // window.addFlags(
-        //     WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-        // )
+    override fun onNewIntent(intent: Intent){
+        super.onNewIntent(intent)
+        // Si el app estaba abierta en background, se procede nuevo Intent
+        handleIntent(intent)
+    }
 
-        // android.util.Log.d(
-        //     "ALARM_PLAY",
-        //     "MainActivity created"
-        // )
+    private fun handleIntent(intent: Intent){
+        if(intent.hasExtra("alarm_id")){
+            pendingAlarmId = intent.getIntExtra("alarm_id", -1)
+        }
     }
 
     override fun onResume(){
@@ -67,6 +71,19 @@ class MainActivity : AudioServiceActivity() {
         )
     }
     window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            "alarm_play/alarm_receiver"
+            ).setMethodCallHandler {call, result -> 
+            if(call.method == "getPendingAlarm"){
+                result.success(pendingAlarmId)
+                // se limpia el valor, para que no se ejecute en futuros reinicios
+                pendingAlarmId = null 
+            }else{
+                result.notImplemented()
+            }
+        }
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,

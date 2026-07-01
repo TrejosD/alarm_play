@@ -1,10 +1,13 @@
-import 'package:alarm_play/core/providers/alarm_provider.dart';
-import 'package:alarm_play/core/services/notification_service.dart';
-import 'package:alarm_play/presentations/screens/new_alarm_screen.dart';
-import 'package:alarm_play/presentations/widgets/alarm_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:alarm_play/core/navigation/app_router.dart';
+import 'package:alarm_play/core/providers/alarm_provider.dart';
+import 'package:alarm_play/core/services/notification_service.dart';
+import 'package:alarm_play/presentations/widgets/alarm_card.dart';
+
+import 'screens.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -14,14 +17,33 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  static const channel = MethodChannel("alarm_play/alarm_receiver");
   @override
   void initState() {
     super.initState();
+    _checkPendingAlarm();
+    // todo revisar la funcion de chequear estos permisos aca
     final notifications = FlutterLocalNotificationsPlugin();
     final notificationService = NotificationService(notifications);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await notificationService.checkExactAlarmPermission(context);
     });
+  }
+
+  Future<void> _checkPendingAlarm() async {
+    try {
+      final int? alarmId = await channel.invokeMethod('getPendingAlarm');
+      // si el ID es valido y no -1, navega automaticamente
+      if (alarmId != null && alarmId != -1) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          navigatorKey.currentState?.push(MaterialPageRoute(
+            builder: (context) => AlarmRingingScreen(alarmId: alarmId),
+          ));
+        });
+      }
+    } catch (e) {
+      print('Error obtenido alarm pendiente: $e');
+    }
   }
 
   @override

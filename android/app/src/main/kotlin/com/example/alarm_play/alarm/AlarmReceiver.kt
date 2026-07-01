@@ -22,7 +22,10 @@ class AlarmReceiver : BroadcastReceiver(){
         val serviceIntent = Intent(
             context,
             AlarmForegroundService:: class.java
-            )
+            ).apply{
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                putExtra("alarm_id", alarmId)
+            }
 
         serviceIntent.putExtra(
             "alarm_id",

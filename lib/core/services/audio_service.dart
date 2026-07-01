@@ -19,9 +19,10 @@ class AudioService {
       await player.setAudioSource(audioSource);
       // await player.setAsset(assetPath);
       await player.play();
-      AudioSource.uri(Uri(), tag: MediaItem(id: '1', title: 'alarm'));
+      AudioSource.uri(Uri.parse(assetPath),
+          tag: MediaItem(id: '1', title: 'alarm'));
     } on PlayerException catch (e) {
-      print('Player excextio: $e');
+      print('Player exception: $e');
     }
   }
 

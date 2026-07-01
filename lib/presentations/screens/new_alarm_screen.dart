@@ -1,8 +1,8 @@
-import 'package:alarm_play/core/controllers/alarm_controller_provider.dart';
-import 'package:alarm_play/core/services/obtain_12hours_service.dart';
-import 'package:alarm_play/data/entities/alarm_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/controllers/controllers.dart';
+import '../../core/services/services.dart';
+import '../../data/entities/entities.dart';
 
 class NewAlarmScreen extends ConsumerStatefulWidget {
   final Alarm? alarm;
