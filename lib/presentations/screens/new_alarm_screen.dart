@@ -233,6 +233,20 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
             ),
             Row(
               children: [
+                Text('Volumen ascendente'),
+                Spacer(),
+                Switch(
+                  value: ascendingVolume,
+                  onChanged: (value) {
+                    setState(() {
+                      ascendingVolume = !ascendingVolume;
+                    });
+                  },
+                )
+              ],
+            ),
+            Row(
+              children: [
                 Text('Eliminar despues de sonar'),
                 Spacer(),
                 Switch(

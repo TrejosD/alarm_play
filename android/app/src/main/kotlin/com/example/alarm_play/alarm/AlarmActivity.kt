@@ -38,14 +38,6 @@ class AlarmActivity : AppCompatActivity(){
         startActivity(intentToFlutter)
         // Cerramos esta activity intermedio
         finish()
-
-        // val textView = TextView(this)
-
-        // textView.text = "Alarm Triggered"
-
-        // textView.textSize = 32f
-        // textView.gravity = android.view.Gravity.CENTER
-        // setContentView(textView)
     }
 
     override fun onResume(){

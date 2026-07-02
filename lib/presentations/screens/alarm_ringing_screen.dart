@@ -35,12 +35,18 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
     final isar = IsarService.instance;
     Alarm? alarm = await isar.alarms.get(widget.alarmId);
     if (alarm == null) return;
+    double initialVolume = 0.1;
+    if (!alarm.ascendingVolume) {
+      initialVolume = 1.0;
+    }
     final audio = ref.read(audioServiceProvider);
     if (alarm.vibrateEnabled) {
       await ref.read(vibrationServiceProvider).start();
     }
     await audio.startAlarm(
-        assetPath: 'assets/audiofiles/alarm.mp3', volume: alarm.volume);
+        assetPath: "asset:assets/audiofiles/alarm.mp3",
+        volume: alarm.volume,
+        initialVolume: initialVolume);
     setState(() {});
   }
 
