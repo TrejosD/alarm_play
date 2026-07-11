@@ -66,6 +66,11 @@ class AlarmController {
     await scheduler.scheduleAlarm(alarm);
   }
 
+  Future<void> scheduleSnoozeAlarm(Alarm alarm, int snoozeTime) async {
+    print('Alarm ${alarm.id} snoozed');
+    await scheduler.scheduleSnoozeAlarm(alarm, snoozeTime);
+  }
+
   Future<void> stopAlarm(Alarm alarm) async {
     await scheduler.cancelAlarm(alarm.id!);
     await scheduler.onAlarmFinished(alarm);

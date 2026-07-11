@@ -45,14 +45,12 @@ class AudioService {
     final int totalSteps = (totalDurationSeconds.toInt() * 100);
     final double volumeIncrement = targetVolume / totalSteps;
     _volumeTimer = Timer.periodic(stepDuration, (timer) async {
-      print('Desde TimerPeridic');
       currentVolume += volumeIncrement;
       if (currentVolume >= targetVolume) {
         currentVolume = targetVolume;
         timer.cancel();
       }
       try {
-        print('Desde Try');
         await player.setVolume(currentVolume);
       } catch (e) {
         timer.cancel();

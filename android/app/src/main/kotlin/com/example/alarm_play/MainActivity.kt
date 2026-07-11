@@ -77,9 +77,16 @@ class MainActivity : AudioServiceActivity() {
             "alarm_play/alarm_receiver"
             ).setMethodCallHandler {call, result -> 
             if(call.method == "getPendingAlarm"){
-                result.success(pendingAlarmId)
+                // guardar el valor actual
+                val currentAlarmId = pendingAlarmId                
                 // se limpia el valor, para que no se ejecute en futuros reinicios
                 pendingAlarmId = null 
+                // utilizamos el valor guardado
+                result.success(currentAlarmId)
+            }else if(call.method == "clearPendingAlarm"){
+                // metodo para asegurar la limpieza desde Flutter al cancelar alarma
+                pendingAlarmId = null
+                result.success(null)
             }else{
                 result.notImplemented()
             }

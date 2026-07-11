@@ -1,13 +1,18 @@
-import 'package:alarm_play/core/controllers/alarm_controller_provider.dart';
-import 'package:alarm_play/core/db/isar_service.dart';
-import 'package:alarm_play/core/providers/audio_service_provider.dart';
-import 'package:alarm_play/core/providers/vibration_service_provider.dart';
-import 'package:alarm_play/core/services/obtain_12hours_service.dart';
-import 'package:alarm_play/data/entities/alarm_entity.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:async';
+import 'package:alarm_play/presentations/providers/alarm_executed_provider.dart';
+import 'package:alarm_play/presentations/screens/home_screen.dart';
+import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:isar/isar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/material.dart';
+
+import 'package:alarm_play/core/controllers/alarm_controller_provider.dart';
+import 'package:alarm_play/core/db/isar_service.dart';
+import 'package:alarm_play/core/services/obtain_12hours_service.dart';
+import 'package:alarm_play/data/entities/alarm_entity.dart';
+
+import '../../core/providers/providers.dart';
 
 class AlarmRingingScreen extends ConsumerStatefulWidget {
   final Id alarmId;
@@ -17,12 +22,21 @@ class AlarmRingingScreen extends ConsumerStatefulWidget {
   ConsumerState<AlarmRingingScreen> createState() => _AlarmRingingScreenState();
 }
 
-class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
+class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
+    with SingleTickerProviderStateMixin {
+  static const channel = MethodChannel("alarm_play/alarm_receiver");
+  int silenciar = 10;
+  bool _mostrarContador = false;
+  late AnimationController _controller;
   @override
   void initState() {
     super.initState();
     WakelockPlus.enable();
+    getSnoozeTime();
+    _controller = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 2000));
     _startAlarm();
+    _countdownStop();
   }
 
   @override
@@ -32,6 +46,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
   }
 
   Future<void> _startAlarm() async {
+    // ref.read(alarmExecutedProvider.notifier).state = true;
     final isar = IsarService.instance;
     Alarm? alarm = await isar.alarms.get(widget.alarmId);
     if (alarm == null) return;
@@ -50,6 +65,42 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
     setState(() {});
   }
 
+  void _countdownStop() {
+    setState(() {
+      _mostrarContador = false;
+      _controller.reset();
+    });
+  }
+
+  void _countdownStart() {
+    setState(() {
+      _mostrarContador = true;
+      _controller.forward();
+    });
+  }
+
+  Future<void> _countdownEnd() async {
+    _countdownStop();
+    final isar = IsarService.instance;
+    final Alarm? alarm = await isar.alarms.get(widget.alarmId);
+    final controller = ref.read(alarmControllerProvider);
+    await ref.read(audioServiceProvider).stop();
+    await ref.read(vibrationServiceProvider).stop();
+    if (alarm == null) return;
+    await controller.stopAlarm(alarm);
+    ref
+        .read(alarmControllerProvider)
+        .scheduleSnoozeAlarm(alarm, alarm.snoozeMinutes);
+    print('Alarm id: ${alarm.id} time: ${alarm.snoozeMinutes}');
+    setState(() {});
+    print('Se ejecuto luego del longPress');
+    if (mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+          (route) => false);
+    }
+  }
+
   Future<void> _stopAlarm() async {
     final isar = IsarService.instance;
     Alarm? alarm = await isar.alarms.get(widget.alarmId);
@@ -58,46 +109,85 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen> {
     await ref.read(vibrationServiceProvider).stop();
     if (alarm == null) return;
     await controller.stopAlarm(alarm);
-    if (mounted) {
-      Navigator.of(context).pop();
+    try {
+      await channel.invokeMethod('clearPendingAlarm');
+    } catch (e) {
+      print('Error limpiando alarm nativa: $e');
     }
+    if (mounted) {
+      Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(),
+          ),
+          (route) => false);
+    }
+  }
+
+  Future<void> getSnoozeTime() async {
+    final isar = IsarService.instance;
+    final Alarm? alarm = await isar.alarms.get(widget.alarmId);
+    silenciar = alarm!.snoozeMinutes;
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     final TimeOfDay hora = TimeOfDay.now();
-    final int silenciar = 10;
-    return GestureDetector(
-      onVerticalDragDown: (details) {
-        _stopAlarm();
-      },
-      child: Scaffold(
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(
-              child: Text(
-                Obtain12hoursService.obtenerFormatoAmPm(hora),
-                style: TextStyle(fontSize: 58),
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _countdownEnd();
+      }
+    });
+    return Scaffold(
+        body: GestureDetector(
+            onVerticalDragUpdate: (details) {
+              _stopAlarm();
+            },
+            child: Container(
+              decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+              height: 800,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Center(
+                    child: Text(
+                      Obtain12hoursService.obtenerFormatoAmPm(hora),
+                      style: TextStyle(fontSize: 58),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 28,
+                  ),
+                  Text('Desliza para detener')
+                ],
               ),
-              // todo aca tengo la hora actual en 24H, necesito como convertir la hora en 12H
-            ),
-            SizedBox(
-              height: 28,
-            ),
-            Text('Desliza para detener')
-          ],
-        ),
-        floatingActionButton: ElevatedButton.icon(
-          onPressed: () {},
-          label: Text('Silenciar por: $silenciar'),
-          onLongPress: () {
-            // todo Provider para la cantidad de tiempo de silencio en settings
-            // todo medoto para selenciar alarma.
-          },
-        ),
-      ),
-    );
+            )),
+        floatingActionButton: GestureDetector(
+            onTapDown: (_) => _countdownStart(),
+            onTapUp: (_) => _countdownStop(),
+            onTapCancel: () => _countdownStop(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                if (_mostrarContador)
+                  SizedBox(
+                      width: 98,
+                      child: LinearProgressIndicator(
+                        controller: _controller,
+                        backgroundColor: Colors.grey.shade300,
+                      )),
+                SizedBox(
+                  height: 8,
+                ),
+                ElevatedButton.icon(
+                  onPressed: () {},
+                  label: Text('Silenciar por: $silenciar'),
+                ),
+                SizedBox(
+                  height: 12,
+                )
+              ],
+            )));
   }
 }
 

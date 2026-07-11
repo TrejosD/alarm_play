@@ -1,3 +1,4 @@
+import 'package:alarm_play/presentations/providers/alarm_executed_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -20,9 +21,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   static const channel = MethodChannel("alarm_play/alarm_receiver");
   @override
   void initState() {
+    bool wasAlarmExecuted = ref.read(alarmExecutedProvider);
     super.initState();
-    _checkPendingAlarm();
-    // todo revisar la funcion de chequear estos permisos aca
+    _checkPendingAlarm(wasAlarmExecuted);
+    // el metodo para pedir notificaciones tambien maneja, los permisos especiales de Xiaomi
     final notifications = FlutterLocalNotificationsPlugin();
     final notificationService = NotificationService(notifications);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -30,15 +32,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
-  Future<void> _checkPendingAlarm() async {
+  Future<void> _checkPendingAlarm(bool wasAlarmExecuted) async {
+    if (wasAlarmExecuted) return;
     try {
       final int? alarmId = await channel.invokeMethod('getPendingAlarm');
       // si el ID es valido y no -1, navega automaticamente
       if (alarmId != null && alarmId != -1) {
+        ref.read(alarmExecutedProvider.notifier).state = true;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           navigatorKey.currentState?.push(MaterialPageRoute(
             builder: (context) => AlarmRingingScreen(alarmId: alarmId),
           ));
+          ref.read(alarmExecutedProvider.notifier).state = false;
         });
       }
     } catch (e) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'core/services/services.dart';
@@ -25,46 +26,19 @@ void main() async {
   void restoreAlarmsEntryPoint() async {
     await initAppDB();
     // todo probar creando una alarma a una hora X e ingresandola a la DB, para ver si este codigo se esta ejecutando
-    final isar = IsarService.instance;
-    final alarmScheduler = AlarmSchedulerService();
-    final restoreService =
-        AlarmRestoreService(isar: isar, alarmScheduler: alarmScheduler);
-    try {
-      print('Restore Service Execution');
-      restoreService.restoreAllActiveAlarms();
-    } catch (e) {
-      print('Error desde restoreAllActiveAlarms: $e');
-    }
+    // final isar = IsarService.instance;
+    // final alarmScheduler = AlarmSchedulerService();
+    // final restoreService =
+    //     AlarmRestoreService(isar: isar, alarmScheduler: alarmScheduler);
+    // try {
+    //   print('Restore Service Execution');
+    //   restoreService.restoreAllActiveAlarms();
+    // } catch (e) {
+    //   print('Error desde restoreAllActiveAlarms: $e');
+    // }
   }
 
   await initAppDB();
-// este no lo veo funcionar para nada
-  // final notifications = FlutterLocalNotificationsPlugin();
-  // final notificationService = NotificationService(notifications);
-  // await notificationService.init(onAlarmTriggered: (alarmId) {
-  //   navigatorKey.currentState?.push(MaterialPageRoute(
-  //       builder: (_) => AlarmRingingScreen(alarmId: alarmId)));
-  // });
-  // todo de estos 3 metodos para la navegacion, ELIMINAR los que no sean necesarios
-  // final notificationDetails =
-  //     await notifications.getNotificationAppLaunchDetails();
-  // if (notificationDetails?.didNotificationLaunchApp ?? false) {
-  //   final payload = notificationDetails!.notificationResponse?.payload;
-  //   if (payload != null) {
-  //     final alarmId = int.parse(payload);
-  //     WidgetsBinding.instance.addPostFrameCallback((_) {
-  //       navigatorKey.currentState?.push(MaterialPageRoute(
-  //         builder: (context) => AlarmRingingScreen(alarmId: alarmId),
-  //       ));
-  //     });
-  //   }
-  // }
-  // esto me muestra las notificationes pendientes, "que no fueron mostradas y quedaron pegadas"
-  // final pending = await notifications.pendingNotificationRequests();
-  // for (final notification in pending) {
-  //   print('Pending Notification ${notification.id}');
-  //   print('Notification info: ${notification.body}');
-  // }
 
 // Listener que al escuchar una alarma ejecuta la navegacion
   final alarmEventService = AlarmEventService();

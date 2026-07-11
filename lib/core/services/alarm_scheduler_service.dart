@@ -15,38 +15,13 @@ class AlarmSchedulerService {
     await AlarmBridgeService.scheduleAlarm(
         alarmId: alarm.id!, triggerTime: nextTrigger);
   }
-  // Future<void> scheduleAlarm(Alarm alarm) async {
-  //   print('Scheduled alarm ${alarm.id}');
-  //   print('nextTrigger ${alarm.nextTrigger}');
-  //   if (alarm.nextTrigger == null) return;
-  //   await notifications.zonedSchedule(
-  //     id: alarm.id ?? 1,
-  //     title: 'Alarm',
-  //     body: alarm.label ?? 'Wake up',
-  //     scheduledDate: tz.TZDateTime.from(alarm.nextTrigger!, tz.local),
-  //     notificationDetails: NotificationDetails(
-  //         android: AndroidNotificationDetails('alarm_channel', 'alarms',
-  //             importance: Importance.max,
-  //             priority: Priority.high,
-  //             fullScreenIntent: true,
-  //             category: AndroidNotificationCategory.alarm,
-  //             playSound: false,
-  //             enableVibration: alarm.vibrateEnabled,
-  //             ongoing: true,
-  //             autoCancel: false,
-  //             visibility: NotificationVisibility.public)),
-  //     payload: alarm.id.toString(),
-  //     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-  //     matchDateTimeComponents: null,
-  //   );
-  // }
-  // Future<void> checkPendigNotification() async {
-  //   final pending = await notifications.pendingNotificationRequests();
-  //   print('Pending notification List ${pending.length}');
-  //   for (final p in pending) {
-  //     print('Pending notification id: ${p.id}');
-  //   }
-  // }
+
+  Future<void> scheduleSnoozeAlarm(Alarm alarm, int snoozeTime) async {
+    final nextTrigger = alarm.nextTrigger!.add(Duration(minutes: snoozeTime));
+    print('Alarm ${alarm.id} will start on: ${nextTrigger}');
+    await AlarmBridgeService.scheduleAlarm(
+        alarmId: alarm.id!, triggerTime: nextTrigger);
+  }
 
   Future<void> cancelAlarm(int alarmId) async {
     await AlarmBridgeService.cancelAlarm(alarmId: alarmId);
