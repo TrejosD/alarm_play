@@ -17,9 +17,9 @@ class Alarm {
 // dias a sonar la alarma
   late List<int> repeatDays; // 1-7
 // ruta de archivo sonido - sera Innecesario
-  String assetPath = 'assets/audiofiles/alarm.mp3';
-
+  late String? defaultSound;
   // late int playlistId;
+  late int playlistId;
   // forma de reproduccion de sonido
   @enumerated
   late PlaybackMode playbackMode;
@@ -50,7 +50,8 @@ class Alarm {
       required this.createdAt,
       required this.updatedAt,
       required this.repeatDays,
-      required this.assetPath,
+      required this.defaultSound,
+      required this.playlistId,
       required this.playbackMode,
       required this.isActive,
       required this.playOnce,
@@ -70,7 +71,8 @@ class Alarm {
           DateTime? createdAt,
           DateTime? updatedAt,
           List<int>? repeatDays,
-          String? assetPath,
+          String? defaultSound,
+          int? playlistId,
           PlaybackMode? playbackMode,
           bool? isActive,
           bool? playOnce,
@@ -88,7 +90,8 @@ class Alarm {
           createdAt: createdAt ?? this.createdAt,
           updatedAt: updatedAt ?? this.updatedAt,
           repeatDays: repeatDays ?? this.repeatDays,
-          assetPath: assetPath ?? this.assetPath,
+          defaultSound: defaultSound ?? this.defaultSound,
+          playlistId: playlistId ?? this.playlistId,
           playbackMode: playbackMode ?? this.playbackMode,
           isActive: isActive ?? this.isActive,
           playOnce: playOnce ?? this.playOnce,

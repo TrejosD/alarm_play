@@ -21,7 +21,8 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
       createdAt: DateTime.now(),
       updatedAt: DateTime.now(),
       repeatDays: [],
-      assetPath: 'assets/audiofiles/alarm.mp3',
+      defaultSound: 'assets/audiofiles/alarm.mp3',
+      playlistId: 0,
       playbackMode: PlaybackMode.repeatOne,
       isActive: true,
       playOnce: false,
@@ -62,6 +63,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   late PlaybackMode playBackMode;
   late double volume;
   late List<int> selectedDays;
+  late int playListId;
   // DateTime? nexTrigger = widget.alarm.nextTrigger;
   final TextEditingController snoozeCtrller = TextEditingController();
   final TextEditingController stopCtrller = TextEditingController();
@@ -78,6 +80,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
     autoStopAfter = widget.alarm.autoStopAfterMinutes;
     playBackMode = widget.alarm.playbackMode;
     volume = widget.alarm.volume;
+    playListId = widget.alarm.playlistId;
   }
 
   @override
@@ -113,7 +116,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
       widget.alarm.hour = selectedTime!.hour;
       widget.alarm.minute = selectedTime!.minute;
       widget.alarm.ascendingVolume = ascendingVolume;
-      widget.alarm.assetPath;
+      widget.alarm.playlistId = playListId;
       widget.alarm.id = widget.alarm.id;
       widget.alarm.autoStop = autoStop;
       widget.alarm.autoStopAfterMinutes = autoStopAfter;
@@ -145,6 +148,8 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
       }
     }
 
+// todo el defaultSound nunca se va a cambiar. El playList, debe ser creado previamente, y aca, solo voy a guardar su Id, en el Alarm
+// todo el metodo de seleccionar el playList, debe modificar la variable playListId, y guardar aca su id y listo.
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(

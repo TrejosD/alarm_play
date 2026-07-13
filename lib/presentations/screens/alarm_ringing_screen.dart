@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:alarm_play/presentations/providers/alarm_executed_provider.dart';
 import 'package:alarm_play/presentations/screens/home_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
