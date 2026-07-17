@@ -23,7 +23,7 @@ class _NewAlarmScreenState extends ConsumerState<NewAlarmScreen> {
       repeatDays: [],
       defaultSound: 'assets/audiofiles/alarm.mp3',
       playlistId: 0,
-      playbackMode: PlaybackMode.repeatOne,
+      playbackMode: PlaybackMode.sequential,
       isActive: true,
       playOnce: false,
       vibrateEnabled: true,
@@ -85,6 +85,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // todo con mismo sistema puedo modificar el UI para visualizar los dias mejor
     final List<Map<String, dynamic>> daysConfig = [
       {'label': 'L', 'value': 1},
       {'label': 'M', 'value': 2},
@@ -150,6 +151,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
 
 // todo el defaultSound nunca se va a cambiar. El playList, debe ser creado previamente, y aca, solo voy a guardar su Id, en el Alarm
 // todo el metodo de seleccionar el playList, debe modificar la variable playListId, y guardar aca su id y listo.
+// todo cambiar playBackMode
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -206,7 +208,6 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                   final int value = day['value'];
                   final String label = day['label'];
                   final bool isSelected = selectedDays.contains(value);
-
                   return FilterChip(
                     label: Text(label),
                     showCheckmark: false,

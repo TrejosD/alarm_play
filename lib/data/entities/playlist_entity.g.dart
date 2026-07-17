@@ -768,13 +768,23 @@ const PlayListTrackSchema = Schema(
   name: r'PlayListTrack',
   id: 5349736336374685661,
   properties: {
-    r'localPath': PropertySchema(
+    r'fileSize': PropertySchema(
       id: 0,
+      name: r'fileSize',
+      type: IsarType.long,
+    ),
+    r'importedAt': PropertySchema(
+      id: 1,
+      name: r'importedAt',
+      type: IsarType.dateTime,
+    ),
+    r'localPath': PropertySchema(
+      id: 2,
       name: r'localPath',
       type: IsarType.string,
     ),
     r'title': PropertySchema(
-      id: 1,
+      id: 3,
       name: r'title',
       type: IsarType.string,
     )
@@ -812,8 +822,10 @@ void _playListTrackSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.localPath);
-  writer.writeString(offsets[1], object.title);
+  writer.writeLong(offsets[0], object.fileSize);
+  writer.writeDateTime(offsets[1], object.importedAt);
+  writer.writeString(offsets[2], object.localPath);
+  writer.writeString(offsets[3], object.title);
 }
 
 PlayListTrack _playListTrackDeserialize(
@@ -823,8 +835,10 @@ PlayListTrack _playListTrackDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = PlayListTrack();
-  object.localPath = reader.readStringOrNull(offsets[0]);
-  object.title = reader.readStringOrNull(offsets[1]);
+  object.fileSize = reader.readLongOrNull(offsets[0]);
+  object.importedAt = reader.readDateTimeOrNull(offsets[1]);
+  object.localPath = reader.readStringOrNull(offsets[2]);
+  object.title = reader.readStringOrNull(offsets[3]);
   return object;
 }
 
@@ -836,8 +850,12 @@ P _playListTrackDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readLongOrNull(offset)) as P;
     case 1:
+      return (reader.readDateTimeOrNull(offset)) as P;
+    case 2:
+      return (reader.readStringOrNull(offset)) as P;
+    case 3:
       return (reader.readStringOrNull(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -846,6 +864,154 @@ P _playListTrackDeserializeProp<P>(
 
 extension PlayListTrackQueryFilter
     on QueryBuilder<PlayListTrack, PlayListTrack, QFilterCondition> {
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      fileSizeIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'fileSize',
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      fileSizeIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'fileSize',
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      fileSizeEqualTo(int? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'fileSize',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      fileSizeGreaterThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'fileSize',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      fileSizeLessThan(
+    int? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'fileSize',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      fileSizeBetween(
+    int? lower,
+    int? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'fileSize',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      importedAtIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'importedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      importedAtIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'importedAt',
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      importedAtEqualTo(DateTime? value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'importedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      importedAtGreaterThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'importedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      importedAtLessThan(
+    DateTime? value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'importedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
+      importedAtBetween(
+    DateTime? lower,
+    DateTime? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'importedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<PlayListTrack, PlayListTrack, QAfterFilterCondition>
       localPathIsNull() {
     return QueryBuilder.apply(this, (query) {

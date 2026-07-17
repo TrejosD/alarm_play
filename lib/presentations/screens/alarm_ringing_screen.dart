@@ -58,7 +58,8 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
       await ref.read(vibrationServiceProvider).start();
     }
     await audio.startAlarm(
-        assetPath: "asset:assets/audiofiles/alarm.mp3",
+        playlistId: alarm.playlistId,
+        mode: alarm.playbackMode,
         volume: alarm.volume,
         initialVolume: initialVolume);
     setState(() {});
@@ -90,9 +91,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     ref
         .read(alarmControllerProvider)
         .scheduleSnoozeAlarm(alarm, alarm.snoozeMinutes);
-    print('Alarm id: ${alarm.id} time: ${alarm.snoozeMinutes}');
     setState(() {});
-    print('Se ejecuto luego del longPress');
     if (mounted) {
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => HomeScreen()),

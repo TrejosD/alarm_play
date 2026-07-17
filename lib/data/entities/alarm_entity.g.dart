@@ -255,12 +255,10 @@ P _alarmDeserializeProp<P>(
 const _AlarmplaybackModeEnumValueMap = {
   'shuffle': 0,
   'sequential': 1,
-  'repeatOne': 2,
 };
 const _AlarmplaybackModeValueEnumMap = {
   0: PlaybackMode.shuffle,
   1: PlaybackMode.sequential,
-  2: PlaybackMode.repeatOne,
 };
 
 Id _alarmGetId(Alarm object) {

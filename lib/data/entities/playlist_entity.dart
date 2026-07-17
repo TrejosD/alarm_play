@@ -17,4 +17,6 @@ class Playlist {
 class PlayListTrack {
   String? title;
   String? localPath;
+  int? fileSize;
+  DateTime? importedAt;
 }

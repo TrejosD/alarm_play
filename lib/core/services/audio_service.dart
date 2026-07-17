@@ -1,27 +1,34 @@
 import 'dart:async';
 
+import 'package:alarm_play/core/providers/playlist_repository_provider.dart';
+import 'package:alarm_play/data/repositories/playlist_repository.dart';
+import 'package:alarm_play/features/playlists/services/track_storage_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 
+import '../../data/entities/entities.dart';
+
 class AudioService {
+  final Ref _ref;
+  AudioService(this._ref);
   final player = AudioPlayer();
   Timer? _volumeTimer;
+  final trackStoreService = TrackStorageFileService();
+  PlaylistRepository get _playlistRepository =>
+      _ref.read(playlistRepositoryProvider);
 
   Future<void> startAlarm(
-      {required String assetPath,
+      {int? playlistId,
+      required PlaybackMode mode,
       required double volume,
       required double initialVolume}) async {
     try {
       _volumeTimer?.cancel();
-      final audioSource = AudioSource.uri(
-        Uri.parse(assetPath),
-        tag: MediaItem(
-          id: '1',
-          title: "alarm",
-        ),
-      );
-      await player.setLoopMode(LoopMode.one);
-      await player.setAudioSource(audioSource);
+      final playlist = await _loadPlayList(playlistId);
+      final audioSource = await _buildAudioSource(playlist);
+      await _configurePlayBackMode(mode);
+      await player.setAudioSources(audioSource);
       await player.setVolume(initialVolume);
       _startFadeIn(targetVolume: volume, initialVolume: initialVolume);
       await player.play();
@@ -29,6 +36,71 @@ class AudioService {
     } on PlayerException catch (e) {
       print('Player exception: $e');
     }
+  }
+
+  Future<Playlist?> _loadPlayList(int? playlistId) async {
+    // si el playlistId es nulo, no devolvemos una playList nula
+    if (playlistId == null) {
+      return null;
+    }
+    // buscamos la playlist de acuerdo al Id
+    final playlist = await _playlistRepository.getById(playlistId);
+    // si al buscar el playList es nula , no devolvemos una playList nula
+    if (playlist == null) {
+      return null;
+    }
+    // si todo es correcto retornamos la playList
+    return playlist;
+  }
+
+// este metodo siempre devuelve un audioSource. SI el playlist no existe tenemos un default. tambien revisa archivos eliminados y los omite
+  Future<List<AudioSource>> _buildAudioSource(Playlist? playlist) async {
+    // playlist ?? sonido por defecto
+    if (playlist == null || playlist.tracks.isEmpty) {
+      return _getDefaultAudioSurce();
+    }
+    final children = <AudioSource>[];
+    for (final track in playlist.tracks) {
+      // ignorar archivos inexistentes
+      if (!await trackStoreService.exists(track)) continue;
+// añadimos los tracks del playList a una lista de reproduccion
+      final file = await trackStoreService.getFile(track);
+      children.add(AudioSource.file(file.path,
+          tag: MediaItem(id: track.localPath!, title: track.title!)));
+    }
+    // si la playlist esta vacia usamos el default
+    if (children.isEmpty) {
+      return _getDefaultAudioSurce();
+    }
+    return children;
+  }
+
+// este metodo organiza nuestro playList entre sequencial o shuffle
+  Future<void> _configurePlayBackMode(PlaybackMode mode) async {
+    switch (mode) {
+      case PlaybackMode.sequential:
+        await player.setShuffleModeEnabled(false);
+        await player.setLoopMode(LoopMode.all);
+        break;
+      case PlaybackMode.shuffle:
+        await player.setShuffleModeEnabled(true);
+        await player.shuffle();
+        await player.setLoopMode(LoopMode.all);
+        break;
+    }
+  }
+
+// retornamos el sonido por defult como una lista, para que el controlador de audio, siempre tenga una lista de reproduccion y no diferenciar entre listas y archivos
+  List<AudioSource> _getDefaultAudioSurce() {
+    final defaultAudio = <AudioSource>[];
+    defaultAudio.add(AudioSource.uri(
+      Uri.parse("asset:assets/audiofiles/alarm.mp3"),
+      tag: MediaItem(
+        id: 'default_alarm',
+        title: "alarm",
+      ),
+    ));
+    return defaultAudio;
   }
 
 // metodo responsable del ascendingVolume

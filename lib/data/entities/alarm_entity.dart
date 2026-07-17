@@ -105,7 +105,7 @@ class Alarm {
           nextTrigger: nextTrigger ?? this.nextTrigger);
 }
 
-enum PlaybackMode { shuffle, sequential, repeatOne }
+enum PlaybackMode { shuffle, sequential }
 
 DateTime calculateNextTrigger(Alarm alarm) {
   final now = DateTime.now();
