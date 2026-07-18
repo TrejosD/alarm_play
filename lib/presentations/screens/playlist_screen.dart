@@ -100,8 +100,9 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
               IconButton.filledTonal(
                   onPressed: _pickAudioFiles,
                   icon: Text('Seleccionar Archivos')),
-              Expanded(
-                  child: ListView.builder(
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
                 itemCount: _tracks.length,
                 itemBuilder: (context, index) {
                   final track = _tracks[index];
@@ -112,7 +113,7 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
                         icon: Icon(Icons.delete)),
                   );
                 },
-              ))
+              )
             ],
           ),
         ),

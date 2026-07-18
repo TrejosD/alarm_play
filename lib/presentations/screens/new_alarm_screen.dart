@@ -1,3 +1,5 @@
+import 'package:alarm_play/core/providers/playlist_list_provider.dart';
+import 'package:alarm_play/presentations/screens/playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/controllers/controllers.dart';
@@ -97,7 +99,6 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
     ];
 
     void toggleDay(int dayValue) {
-      // final days = [...ref.read(selectedDaysProvider)];
       if (selectedDays.contains(dayValue)) {
         selectedDays.remove(dayValue);
       } else {
@@ -149,6 +150,8 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
       }
     }
 
+    final playListStream = ref.watch(playlistListProvider);
+    final playListSelection = playListId;
 // todo el defaultSound nunca se va a cambiar. El playList, debe ser creado previamente, y aca, solo voy a guardar su Id, en el Alarm
 // todo el metodo de seleccionar el playList, debe modificar la variable playListId, y guardar aca su id y listo.
 // todo cambiar playBackMode
@@ -221,7 +224,42 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
             ),
             // esta linea debe ser mas resaltada
             Row(
-              children: [Text("Seleccionar playList")],
+              children: [
+                playListStream.when(
+                    data: (playlist) {
+                      if (playlist.isEmpty) {
+                        return Text('Aun no tienes playlist creadas');
+                      }
+                      return DropdownMenu(
+                          onSelected: (value) {
+                            setState(() {
+                              playListId == value;
+                              print('Valor seleccionado: $value');
+                              print('Nuevo playListId: $playListId');
+                            });
+                          },
+                          dropdownMenuEntries: playlist.map((item) {
+                            return DropdownMenuEntry(
+                                value: item.id, label: item.name);
+                          }).toList());
+                    },
+                    error: (e, _) {
+                      return Center(
+                        child: Text(
+                            'Error during listen the stream: ${e.toString()}'),
+                      );
+                    },
+                    loading: () => Text('Cargando playLists')),
+                Spacer(),
+                IconButton(
+                    onPressed: () {
+                      print('Navegacion ejecutada');
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => PlaylistCreateScreen(),
+                      ));
+                    },
+                    icon: Text('New +'))
+              ],
             ),
             Row(
               children: [

@@ -100,14 +100,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Text('Error ${e.toString()}'),
               ),
           loading: () => Center(child: CircularProgressIndicator())),
-      // Probar Notificationes Local
-      // floatingActionButton: FloatingActionButton(
-      //     onPressed: () async {
-      //       await AlarmBridgeService.scheduleAlarm(
-      //           alarmId: 1,
-      //           triggerTime: DateTime.now().add(Duration(seconds: 15)));
-      //     },
-      //     child: Text('trigger Alarm')),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).push(MaterialPageRoute(

@@ -8,7 +8,7 @@ class IsarService {
   static Future<void> init() async {
     final dir = await getApplicationDocumentsDirectory();
 
-    instance =
-        await Isar.open([AlarmSchema], directory: dir.path, inspector: true);
+    instance = await Isar.open([AlarmSchema, PlaylistSchema],
+        directory: dir.path, inspector: true);
   }
 }
