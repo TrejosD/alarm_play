@@ -233,9 +233,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                       return DropdownMenu(
                           onSelected: (value) {
                             setState(() {
-                              playListId == value;
-                              print('Valor seleccionado: $value');
-                              print('Nuevo playListId: $playListId');
+                              playListId = value!.toInt();
                             });
                           },
                           dropdownMenuEntries: playlist.map((item) {

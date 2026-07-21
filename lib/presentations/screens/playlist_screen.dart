@@ -17,6 +17,7 @@ class PlaylistCreateScreen extends ConsumerStatefulWidget {
 class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
   late TextEditingController _controller;
   late List<PlayListTrack> _tracks;
+  late List<UITracks> _uiTracks;
   late List<PendingTrack> _pendigTracks;
   bool get isEditing => widget.playList != null;
   @override
@@ -27,12 +28,32 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
     // se seleccionan los archivos de audio de la playList. null ? vacio
     _tracks = List<PlayListTrack>.from(widget.playList?.tracks ?? []);
     _pendigTracks = [];
+    _uiTracks = [];
+    _mergeLists();
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  void _mergeLists() {
+    _uiTracks.clear();
+    final tracks = _createUITrackList(_tracks);
+    final pending = _createUITrackList(_pendigTracks);
+    _uiTracks.addAll(tracks);
+    _uiTracks.addAll(pending);
+    // todo el metodo funciona pero, duplica las entradas
+  }
+
+  List<UITracks> _createUITrackList(List tracks) {
+    List<UITracks> list = [];
+    for (final item in tracks) {
+      final newTrack = UITracks(item.title);
+      list.add(newTrack);
+    }
+    return list;
   }
 
 // metodo para seleccionar archivos de audio a la lista
@@ -43,20 +64,27 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
     }
     setState(() {
       _pendigTracks.addAll(newTracks);
+      _mergeLists();
     });
   }
 
 // este metodo elimina el archivo de audio de la lista actual. no del DB
   void _removeTrack(int index) {
     setState(() {
-      _tracks.removeAt(index);
+      _uiTracks.removeAt(index);
+      // todo este metodo debe tambien eliminar los tracks cuando se esta editando. los tracks originales
     });
   }
 
+  // aca estoy creando una lista, para el UI con el metodo remotrack solo se elimina del UI.
+  // hasta que no se salva no tenemos escritura en DB
+  // creo que necesitaria una sola lista, para mostrar y eliminar del UI. luego el guardado en DB,
+
   Future<void> _save() async {
     final name = _controller.text.trim();
-    if (name.isEmpty || _pendigTracks.isEmpty || _tracks.isEmpty) {
+    if (name.isEmpty) {
       return;
+      //deberia tener una evaluacion del form y mostrar el error en UI
     }
     final controller = ref.read(playListControllerProvider.notifier);
     if (isEditing) {
@@ -103,9 +131,9 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: _tracks.length,
+                itemCount: _uiTracks.length,
                 itemBuilder: (context, index) {
-                  final track = _tracks[index];
+                  final track = _uiTracks[index];
                   return ListTile(
                     title: Text(track.title ?? 'unknown track'),
                     trailing: IconButton(
@@ -135,4 +163,9 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
       ),
     );
   }
+}
+
+class UITracks {
+  String? title;
+  UITracks(this.title);
 }

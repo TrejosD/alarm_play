@@ -18,13 +18,15 @@ class PlayListController extends AsyncNotifier<void> {
   }
 
   Future<int?> createPlayList(
-      {required String name, required List<PlayListTrack> tracks}) async {
+      {required String name, required List<PendingTrack> tracks}) async {
     state = const AsyncLoading();
+    List<PlayListTrack> copied;
     try {
       final now = DateTime.now();
+      copied = await _trackStorageFileService.copyTracks(tracks);
       final playList = Playlist()
         ..name = name.trim()
-        ..tracks = tracks
+        ..tracks = copied
         ..createdAt = now
         ..updatedAt = now;
 

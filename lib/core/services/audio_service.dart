@@ -57,6 +57,7 @@ class AudioService {
   Future<List<AudioSource>> _buildAudioSource(Playlist? playlist) async {
     // playlist ?? sonido por defecto
     if (playlist == null || playlist.tracks.isEmpty) {
+      print('playList fue null');
       return _getDefaultAudioSurce();
     }
     final children = <AudioSource>[];
@@ -70,6 +71,7 @@ class AudioService {
     }
     // si la playlist esta vacia usamos el default
     if (children.isEmpty) {
+      print('AudioSource list isEmpty');
       return _getDefaultAudioSurce();
     }
     return children;

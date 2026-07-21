@@ -12,6 +12,7 @@ class PlaylistRepository {
 
   Future<int> create(Playlist playList) async {
     return isar.writeTxn(() async {
+      print('NUeva playList creada');
       return isar.playlists.put(playList);
     });
   }
