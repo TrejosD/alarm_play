@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:alarm_play/core/providers/playlist_repository_provider.dart';
 import 'package:alarm_play/data/repositories/playlist_repository.dart';
@@ -27,8 +28,10 @@ class AudioService {
       _volumeTimer?.cancel();
       final playlist = await _loadPlayList(playlistId);
       final audioSource = await _buildAudioSource(playlist);
+      final index = _intialSoundIndex(mode, audioSource.length);
+      print('Source Index: $index');
+      await player.setAudioSources(audioSource, initialIndex: index);
       await _configurePlayBackMode(mode);
-      await player.setAudioSources(audioSource);
       await player.setVolume(initialVolume);
       _startFadeIn(targetVolume: volume, initialVolume: initialVolume);
       await player.play();
@@ -51,6 +54,15 @@ class AudioService {
     }
     // si todo es correcto retornamos la playList
     return playlist;
+  }
+
+  int _intialSoundIndex(PlaybackMode mode, int sourceLength) {
+    if (mode == PlaybackMode.sequential) {
+      return 0;
+    } else if (mode == PlaybackMode.shuffle) {
+      return Random().nextInt(sourceLength + 1);
+    }
+    return 0;
   }
 
 // este metodo siempre devuelve un audioSource. SI el playlist no existe tenemos un default. tambien revisa archivos eliminados y los omite
