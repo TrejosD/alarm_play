@@ -1,4 +1,5 @@
 import 'package:alarm_play/core/providers/playlist_list_provider.dart';
+import 'package:alarm_play/core/providers/playlist_repository_provider.dart';
 import 'package:alarm_play/presentations/screens/playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -66,6 +67,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   late double volume;
   late List<int> selectedDays;
   late int playListId;
+  bool shufleSound = false;
   // DateTime? nexTrigger = widget.alarm.nextTrigger;
   final TextEditingController snoozeCtrller = TextEditingController();
   final TextEditingController stopCtrller = TextEditingController();
@@ -83,6 +85,15 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
     playBackMode = widget.alarm.playbackMode;
     volume = widget.alarm.volume;
     playListId = widget.alarm.playlistId;
+    syncPlayBackMode();
+  }
+
+  void syncPlayBackMode() {
+    if (widget.alarm.playbackMode == PlaybackMode.shuffle) {
+      shufleSound = true;
+    } else {
+      shufleSound = false;
+    }
   }
 
   @override
@@ -151,10 +162,8 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
     }
 
     final playListStream = ref.watch(playlistListProvider);
-    final playListSelection = playListId;
-// todo el defaultSound nunca se va a cambiar. El playList, debe ser creado previamente, y aca, solo voy a guardar su Id, en el Alarm
-// todo el metodo de seleccionar el playList, debe modificar la variable playListId, y guardar aca su id y listo.
-// todo cambiar playBackMode
+    bool existPlaylist = false;
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -228,9 +237,11 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                 playListStream.when(
                     data: (playlist) {
                       if (playlist.isEmpty) {
+                        existPlaylist = true;
                         return Text('Aun no tienes playlist creadas');
                       }
                       return DropdownMenu(
+                          initialSelection: playListId,
                           onSelected: (value) {
                             setState(() {
                               playListId = value!.toInt();
@@ -249,14 +260,52 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                     },
                     loading: () => Text('Cargando playLists')),
                 Spacer(),
+                existPlaylist
+                    // aca se separo el boton para ir a crear o editar playList. Para poder crear nuevas aunque ya exista alguna
+                    ? SizedBox()
+                    : IconButton(
+                        onPressed: () async {
+                          final playList = await ref
+                              .read(playlistRepositoryProvider)
+                              .getById(playListId);
+                          if (mounted) {
+                            Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) =>
+                                  PlaylistCreateScreen(playList: playList),
+                            ));
+                          }
+                        },
+                        icon: Text('Edit')),
+                SizedBox(
+                  width: 6,
+                ),
                 IconButton(
-                    onPressed: () {
-                      print('Navegacion ejecutada');
+                    onPressed: () async {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => PlaylistCreateScreen(),
                       ));
                     },
+                    // necesito metodo para crear una nueva, aunque ya exista alguna anterior
                     icon: Text('New +'))
+              ],
+            ),
+            Row(
+              children: [
+                Text('Orden de reproduccion aleatorio'),
+                Spacer(),
+                Switch(
+                  value: shufleSound,
+                  onChanged: (value) {
+                    setState(() {
+                      shufleSound = !shufleSound;
+                      if (shufleSound) {
+                        playBackMode = PlaybackMode.shuffle;
+                      } else {
+                        playBackMode = PlaybackMode.sequential;
+                      }
+                    });
+                  },
+                )
               ],
             ),
             Row(
@@ -360,12 +409,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                       )
               ],
             )
-            // todo Necesito que este screen cree una Alarm de acuerdo a los inputs. Para guardarla
-            // forma de seleccionar hora DONE
-            // playList selector
-            // repetir
-            // vibrar al sonar SWITCH default true Done
-            // eliminar despues de sonar SWITCH default false DONE
+            // todo me falta elegir el playbackmode
           ],
         ),
       ),

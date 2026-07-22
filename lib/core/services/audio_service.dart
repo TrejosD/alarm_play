@@ -85,8 +85,8 @@ class AudioService {
         await player.setLoopMode(LoopMode.all);
         break;
       case PlaybackMode.shuffle:
-        await player.setShuffleModeEnabled(true);
         await player.shuffle();
+        await player.setShuffleModeEnabled(true);
         await player.setLoopMode(LoopMode.all);
         break;
     }

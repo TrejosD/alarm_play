@@ -40,19 +40,21 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
 
   void _mergeLists() {
     _uiTracks.clear();
-    final tracks = _createUITrackList(_tracks);
-    final pending = _createUITrackList(_pendigTracks);
+    final tracks = _createUITrackList(_tracks, 'tracks');
+    final pending = _createUITrackList(_pendigTracks, 'pending');
     _uiTracks.addAll(tracks);
     _uiTracks.addAll(pending);
-    // todo el metodo funciona pero, duplica las entradas
   }
 
-  List<UITracks> _createUITrackList(List tracks) {
+  List<UITracks> _createUITrackList(List tracks, String indentifier) {
     List<UITracks> list = [];
+    int index = 0;
     for (final item in tracks) {
-      final newTrack = UITracks(item.title);
+      index++;
+      final newTrack = UITracks(item.title, indentifier, index);
       list.add(newTrack);
     }
+    index = 0;
     return list;
   }
 
@@ -70,9 +72,16 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
 
 // este metodo elimina el archivo de audio de la lista actual. no del DB
   void _removeTrack(int index) {
+    final track = _uiTracks[index];
+    switch (track.indentifier) {
+      case 'pending':
+        _pendigTracks.removeAt(track.index - 1);
+        break;
+      case 'tracks':
+        _tracks.removeAt(track.index - 1);
+    }
     setState(() {
       _uiTracks.removeAt(index);
-      // todo este metodo debe tambien eliminar los tracks cuando se esta editando. los tracks originales
     });
   }
 
@@ -117,13 +126,20 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              TextFormField(
-                controller: _controller,
-                decoration: InputDecoration(
-                    // todo buscar playList en Isar, y guardarla en una variable
-                    hintText: widget.playList == null
-                        ? 'Nombra tu play list'
-                        : widget.playList!.name.toString()),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                child: TextFormField(
+                  controller: _controller,
+                  decoration: InputDecoration(
+                      // todo buscar playList en Isar, y guardarla en una variable
+                      hintText: widget.playList == null
+                          ? 'Nombra tu play list'
+                          : widget.playList!.name.toString()),
+                ),
+              ),
+              SizedBox(
+                height: 8,
               ),
               IconButton.filledTonal(
                   onPressed: _pickAudioFiles,
@@ -167,5 +183,7 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
 
 class UITracks {
   String? title;
-  UITracks(this.title);
+  String indentifier;
+  int index;
+  UITracks(this.title, this.indentifier, this.index);
 }

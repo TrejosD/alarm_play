@@ -142,7 +142,8 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
               _stopAlarm();
             },
             child: Container(
-              decoration: BoxDecoration(border: Border.all(color: Colors.red)),
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(8))),
               height: 800,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
