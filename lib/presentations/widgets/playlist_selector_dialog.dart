@@ -37,7 +37,7 @@ class PlaylistSelectorDialog extends ConsumerWidget {
                         // este metodo debe enviar el playListid a nuestra alarma
                       },
                       child: ListTile(
-                        title: Text(item.name),
+                        title: Text(item.name!),
                         subtitle:
                             Text('Songs ${item.tracks.length.toString()}'),
                       ),

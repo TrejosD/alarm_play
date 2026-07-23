@@ -6,7 +6,7 @@ part 'playlist_entity.g.dart';
 class Playlist {
   Id id = Isar.autoIncrement;
 
-  late String name;
+  String? name;
   late DateTime createdAt;
   late DateTime updatedAt;
 

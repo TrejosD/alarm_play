@@ -1,5 +1,6 @@
 import 'package:alarm_play/core/providers/playlist_list_provider.dart';
 import 'package:alarm_play/core/providers/playlist_repository_provider.dart';
+import 'package:alarm_play/presentations/providers/days_repeat_map_provider.dart';
 import 'package:alarm_play/presentations/screens/playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -98,16 +99,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // todo con mismo sistema puedo modificar el UI para visualizar los dias mejor
-    final List<Map<String, dynamic>> daysConfig = [
-      {'label': 'L', 'value': 1},
-      {'label': 'M', 'value': 2},
-      {'label': 'K', 'value': 3},
-      {'label': 'J', 'value': 4},
-      {'label': 'V', 'value': 5},
-      {'label': 'S', 'value': 6},
-      {'label': 'D', 'value': 7},
-    ];
+    final daysConfig = ref.read(dayRepeatMapProvider);
 
     void toggleDay(int dayValue) {
       if (selectedDays.contains(dayValue)) {
@@ -249,7 +241,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                           },
                           dropdownMenuEntries: playlist.map((item) {
                             return DropdownMenuEntry(
-                                value: item.id, label: item.name);
+                                value: item.id, label: item.name!);
                           }).toList());
                     },
                     error: (e, _) {

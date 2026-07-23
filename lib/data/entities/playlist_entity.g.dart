@@ -59,7 +59,12 @@ int _playlistEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.name.length * 3;
+  {
+    final value = object.name;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   bytesCount += 3 + object.tracks.length * 3;
   {
     final offsets = allOffsets[PlayListTrack]!;
@@ -98,7 +103,7 @@ Playlist _playlistDeserialize(
   final object = Playlist();
   object.createdAt = reader.readDateTime(offsets[0]);
   object.id = id;
-  object.name = reader.readString(offsets[1]);
+  object.name = reader.readStringOrNull(offsets[1]);
   object.tracks = reader.readObjectList<PlayListTrack>(
         offsets[2],
         PlayListTrackSchema.deserialize,
@@ -120,7 +125,7 @@ P _playlistDeserializeProp<P>(
     case 0:
       return (reader.readDateTime(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 2:
       return (reader.readObjectList<PlayListTrack>(
             offset,
@@ -330,8 +335,24 @@ extension PlaylistQueryFilter
     });
   }
 
+  QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'name',
+      ));
+    });
+  }
+
+  QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'name',
+      ));
+    });
+  }
+
   QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameEqualTo(
-    String value, {
+    String? value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
@@ -344,7 +365,7 @@ extension PlaylistQueryFilter
   }
 
   QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameGreaterThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -359,7 +380,7 @@ extension PlaylistQueryFilter
   }
 
   QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameLessThan(
-    String value, {
+    String? value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
@@ -374,8 +395,8 @@ extension PlaylistQueryFilter
   }
 
   QueryBuilder<Playlist, Playlist, QAfterFilterCondition> nameBetween(
-    String lower,
-    String upper, {
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
     bool caseSensitive = true,
@@ -737,7 +758,7 @@ extension PlaylistQueryProperty
     });
   }
 
-  QueryBuilder<Playlist, String, QQueryOperations> nameProperty() {
+  QueryBuilder<Playlist, String?, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
     });

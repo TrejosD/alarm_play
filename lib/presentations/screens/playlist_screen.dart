@@ -175,7 +175,7 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
         ,
         child: controllerState.isLoading
             ? const CircularProgressIndicator()
-            : const Text('Guardar'),
+            : const Text('Save'),
       ),
     );
   }
