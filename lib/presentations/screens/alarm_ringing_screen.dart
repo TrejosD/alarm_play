@@ -121,6 +121,11 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     }
   }
 
+  TimeOfDay syncTime() {
+    final TimeOfDay now = TimeOfDay.now();
+    return now;
+  }
+
   Future<void> getSnoozeTime() async {
     final isar = IsarService.instance;
     final Alarm? alarm = await isar.alarms.get(widget.alarmId);
@@ -130,7 +135,6 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final TimeOfDay hora = TimeOfDay.now();
     _controller.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
         _countdownEnd();
@@ -149,11 +153,16 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Center(
-                    child: Text(
-                      Obtain12hoursService.obtenerFormatoAmPm(hora),
-                      style: TextStyle(fontSize: 58),
-                    ),
-                  ),
+                      // este streambuilder actualiza la hora actual cada 30s, para mostrar siempre la hora actual en alerta
+                      child: StreamBuilder(
+                    stream: Stream.periodic(Duration(seconds: 30)),
+                    builder: (context, snapshot) {
+                      return Text(
+                        Obtain12hoursService.obtenerFormatoAmPm(syncTime()),
+                        style: TextStyle(fontSize: 58),
+                      );
+                    },
+                  )),
                   SizedBox(
                     height: 28,
                   ),

@@ -1,12 +1,11 @@
-import 'package:alarm_play/core/providers/playlist_list_provider.dart';
-import 'package:alarm_play/core/providers/playlist_repository_provider.dart';
 import 'package:alarm_play/presentations/providers/days_repeat_map_provider.dart';
-import 'package:alarm_play/presentations/screens/playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/controllers/controllers.dart';
+import '../../core/providers/providers.dart';
 import '../../core/services/services.dart';
 import '../../data/entities/entities.dart';
+import 'screens.dart';
 
 class NewAlarmScreen extends ConsumerStatefulWidget {
   final Alarm? alarm;

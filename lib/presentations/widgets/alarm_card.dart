@@ -85,7 +85,7 @@ class _AlarmCardState extends ConsumerState<AlarmCard> {
                 }).toList())
           ]),
           StreamBuilder(
-            stream: Stream.periodic(const Duration(seconds: 60)),
+            stream: Stream.periodic(const Duration(seconds: 30)),
             builder: (context, snapshot) {
               final ringTime = getNextRingTime();
               return Row(children: [
