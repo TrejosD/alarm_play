@@ -1,6 +1,6 @@
-import 'package:alarm_play/core/controllers/alarm_controller_provider.dart';
-import 'package:alarm_play/core/providers/playlist_repository_provider.dart';
-import 'package:alarm_play/core/services/obtain_12hours_service.dart';
+import 'package:alarm_play/infrastructure/controllers/alarm_controller_provider.dart';
+import 'package:alarm_play/infrastructure/providers/playlist_repository_provider.dart';
+import 'package:alarm_play/infrastructure/services/obtain_12hours_service.dart';
 import 'package:alarm_play/presentations/providers/days_repeat_map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -1,4 +1,4 @@
-import 'package:alarm_play/core/services/notification_service.dart';
+import 'package:alarm_play/infrastructure/services/notification_service.dart';
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';

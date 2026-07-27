@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:alarm_play/core/navigation/app_router.dart';
-import 'package:alarm_play/core/providers/alarm_provider.dart';
-import 'package:alarm_play/core/services/notification_service.dart';
+import 'package:alarm_play/infrastructure/navigation/app_router.dart';
+import 'package:alarm_play/infrastructure/providers/alarm_provider.dart';
+import 'package:alarm_play/infrastructure/services/notification_service.dart';
 import 'package:alarm_play/presentations/widgets/alarm_card.dart';
 
 import 'screens.dart';

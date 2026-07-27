@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:alarm_play/core/providers/playlist_repository_provider.dart';
+import 'package:alarm_play/infrastructure/providers/playlist_repository_provider.dart';
 import 'package:alarm_play/data/repositories/playlist_repository.dart';
 import 'package:alarm_play/features/playlists/services/track_storage_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

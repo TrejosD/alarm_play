@@ -1,4 +1,4 @@
-import 'package:alarm_play/core/providers/providers.dart';
+import 'package:alarm_play/infrastructure/providers/providers.dart';
 import 'package:alarm_play/presentations/screens/playlist_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

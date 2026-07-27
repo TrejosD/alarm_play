@@ -1,4 +1,4 @@
-import 'package:alarm_play/core/providers/playlist_controller_provider.dart';
+import 'package:alarm_play/infrastructure/providers/playlist_controller_provider.dart';
 import 'package:alarm_play/data/entities/entities.dart';
 import 'package:alarm_play/features/playlists/pendingEntity/pending_track.dart';
 import 'package:alarm_play/features/playlists/providers/track_storage_service_provider.dart';

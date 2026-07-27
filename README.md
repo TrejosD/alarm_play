@@ -17,3 +17,8 @@ Integrasion con Spotify y YouTube music coming soon.
 ```
 dart run build_runner build
 ```
+
+### Observaciones
+
+- Si decido llevar el app a produccion, remover la copia de archivos de sonido.
+- Agregar mas fuentes de archivos de sonido, dropbox, youtube, etc...

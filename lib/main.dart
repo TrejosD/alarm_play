@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'core/services/services.dart';
-import 'package:alarm_play/core/navigation/app_router.dart';
-import 'package:alarm_play/core/db/isar_service.dart';
+import 'infrastructure/services/services.dart';
+import 'package:alarm_play/infrastructure/navigation/app_router.dart';
+import 'package:alarm_play/infrastructure/db/isar_service.dart';
 import 'presentations/screens/screens.dart';
 
 void main() async {

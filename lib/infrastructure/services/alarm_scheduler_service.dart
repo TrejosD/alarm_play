@@ -1,5 +1,5 @@
-import 'package:alarm_play/core/db/isar_service.dart';
-import 'package:alarm_play/core/services/alarm_bridge_service.dart';
+import 'package:alarm_play/infrastructure/db/isar_service.dart';
+import 'package:alarm_play/infrastructure/services/alarm_bridge_service.dart';
 
 import '../../data/entities/entities.dart';
 

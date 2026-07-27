@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:alarm_play/core/providers/playlist_repository_provider.dart';
+import 'package:alarm_play/infrastructure/providers/playlist_repository_provider.dart';
 import 'package:alarm_play/data/entities/entities.dart';
 import 'package:alarm_play/data/repositories/playlist_repository.dart';
 import 'package:alarm_play/features/playlists/pendingEntity/pending_track.dart';

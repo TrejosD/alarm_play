@@ -1,9 +1,9 @@
 import 'package:alarm_play/presentations/providers/days_repeat_map_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/controllers/controllers.dart';
-import '../../core/providers/providers.dart';
-import '../../core/services/services.dart';
+import '../../infrastructure/controllers/controllers.dart';
+import '../../infrastructure/providers/providers.dart';
+import '../../infrastructure/services/services.dart';
 import '../../data/entities/entities.dart';
 import 'screens.dart';
 

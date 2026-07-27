@@ -6,12 +6,12 @@ import 'package:isar/isar.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 
-import 'package:alarm_play/core/controllers/alarm_controller_provider.dart';
-import 'package:alarm_play/core/db/isar_service.dart';
-import 'package:alarm_play/core/services/obtain_12hours_service.dart';
+import 'package:alarm_play/infrastructure/controllers/alarm_controller_provider.dart';
+import 'package:alarm_play/infrastructure/db/isar_service.dart';
+import 'package:alarm_play/infrastructure/services/obtain_12hours_service.dart';
 import 'package:alarm_play/data/entities/alarm_entity.dart';
 
-import '../../core/providers/providers.dart';
+import '../../infrastructure/providers/providers.dart';
 
 class AlarmRingingScreen extends ConsumerStatefulWidget {
   final Id alarmId;
