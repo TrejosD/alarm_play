@@ -14,6 +14,7 @@ class PlaylistCreateScreen extends ConsumerStatefulWidget {
       _PlaylistCreateScreenState();
 }
 
+// todo agrarrarme con esta screen y dejarla bonita
 class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
   late TextEditingController _controller;
   late List<PlayListTrack> _tracks;

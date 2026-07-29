@@ -49,25 +49,11 @@ class AlarmController {
     });
   }
 
-// todo revisar la logica de este metodo, ya que estaba echo para las localNotifications
-  Future<void> updateAlarm(Alarm alarm) async {
-    alarm.updateNextTrigger();
-    await isar.writeTxn(() async {
-      await isar.alarms.put(alarm);
-    });
-
-    if (alarm.isActive) {
-      await stopAlarm(alarm);
-      await scheduleAlarm(alarm);
-    }
-  }
-
   Future<void> scheduleAlarm(Alarm alarm) async {
     await scheduler.scheduleAlarm(alarm);
   }
 
   Future<void> scheduleSnoozeAlarm(Alarm alarm, int snoozeTime) async {
-    print('Alarm ${alarm.id} snoozed');
     await scheduler.scheduleSnoozeAlarm(alarm, snoozeTime);
   }
 

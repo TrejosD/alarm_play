@@ -1,18 +1,17 @@
 import 'dart:async';
 import 'dart:math';
-import 'package:alarm_play/presentations/screens/home_screen.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:isar/isar.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
-
 import 'package:alarm_play/infrastructure/controllers/alarm_controller_provider.dart';
 import 'package:alarm_play/infrastructure/db/isar_service.dart';
 import 'package:alarm_play/infrastructure/services/obtain_12hours_service.dart';
 import 'package:alarm_play/data/entities/alarm_entity.dart';
 
 import '../../infrastructure/providers/providers.dart';
+import 'screens.dart';
 
 class AlarmRingingScreen extends ConsumerStatefulWidget {
   final Id alarmId;
@@ -25,6 +24,7 @@ class AlarmRingingScreen extends ConsumerStatefulWidget {
 class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     with SingleTickerProviderStateMixin {
   static const channel = MethodChannel("alarm_play/alarm_receiver");
+  final isar = IsarService.instance;
   int silenciar = 10;
   bool _mostrarContador = false;
   late int time;
@@ -55,9 +55,8 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     super.dispose();
   }
 
+// metodo inicia la alarma, sonido, vibracion, sonido ascedente
   Future<void> _startAlarm() async {
-    // ref.read(alarmExecutedProvider.notifier).state = true;
-    final isar = IsarService.instance;
     Alarm? alarm = await isar.alarms.get(widget.alarmId);
     if (alarm == null) return;
     double initialVolume = 0.1;
@@ -76,6 +75,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     setState(() {});
   }
 
+// metodo detiene las animaciones del los metodos hold para silenciar alarm
   void _countdownStop() {
     setState(() {
       _mostrarContador = false;
@@ -84,6 +84,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     });
   }
 
+// metodo inicia las animaciones de los metodos hold para silenciar alarm
   void _countdownStart() {
     setState(() {
       _mostrarContador = true;
@@ -91,6 +92,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     });
   }
 
+// metodo se llama cuando terminan las animaciones de los metodos hold para silenciar alarm, detiene todos los controlladores y agenda una alarma dentro de los minutos seleccinados sin guardar en DB
   Future<void> _countdownEnd() async {
     if (isProcessingEnd || !mounted) return;
     isProcessingEnd = true;
@@ -98,7 +100,6 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     _countdownStop();
     _timer?.cancel();
     try {
-      final isar = IsarService.instance;
       final Alarm? alarm = await isar.alarms.get(widget.alarmId);
       final controller = ref.read(alarmControllerProvider);
       if (!mounted) return;
@@ -124,9 +125,9 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     }
   }
 
+// metodo detiene las alarmas, sonido, vibraciones etc
   Future<void> _stopAlarm() async {
     _timer?.cancel();
-    final isar = IsarService.instance;
     Alarm? alarm = await isar.alarms.get(widget.alarmId);
     final controller = ref.read(alarmControllerProvider);
     await ref.read(audioServiceProvider).stop();
@@ -147,23 +148,26 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     }
   }
 
+// metodo retorna la hora actual, se ejecuta por streambuilder
   TimeOfDay syncTime() {
     final TimeOfDay now = TimeOfDay.now();
     return now;
   }
 
+// listener del status de animaciones para los metodos hold para silenciar alarmas
   void _animationStatusListener(AnimationStatus status) {
     if (status == AnimationStatus.completed) {
       _countdownEnd();
     }
   }
 
+// metodo cambia el valor del coundown indicator, esto nos cambia el UI, asi el usuario tiene un apoyo visual
   int countdownIndicator() {
     time--;
     return time;
   }
 
-// este metodo cambia el color del fondo de pantalla
+// este metodo cambia el color del fondo de pantalla,
   void startLoop() {
     _timer?.cancel();
     _timer = Timer.periodic(Duration(milliseconds: 210), (timer) {
@@ -172,6 +176,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     });
   }
 
+// metodo retorna un color, para cambiar el color de fondo de pantalla de acuerdo a la lista
   Color getBackgroundColor() {
     List<Color> colors = [
       Colors.amber,
@@ -184,8 +189,8 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     return colors[random.nextInt(colors.length)];
   }
 
+// metodo actualiza el UI, el valor del snooze time, de acuerdo a la alarma actual
   Future<void> getSnoozeTime() async {
-    final isar = IsarService.instance;
     final Alarm? alarm = await isar.alarms.get(widget.alarmId);
     silenciar = alarm!.snoozeMinutes;
     setState(() {});
@@ -195,10 +200,12 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
   Widget build(BuildContext context) {
     _controller.addStatusListener(_animationStatusListener);
     return Scaffold(
+        // pasamos el background de manera dinamica
         backgroundColor: backgrounColor,
         body: GestureDetector(
             onVerticalDragUpdate: (details) {
               _stopAlarm();
+              // detenemos la alarma al deslizar sobre la pantalla
             },
             child: Container(
               decoration: BoxDecoration(
@@ -227,6 +234,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
                         Column(children: [
                           StreamBuilder(
                               stream:
+                                  // este stream nos cambia el contador miestrar mantenemos precionado el boton, silenciar alarm
                                   Stream.periodic(Duration(milliseconds: 930)),
                               builder: (context, snapshot) {
                                 final text = countdownIndicator();
@@ -270,6 +278,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
                 ],
               ),
             )),
+        // boton para silenciar alarma, tenemos una dinamica de hold durante un tiempo para ejecutar el codigo, si se levanta la precion antes de finalizar el tiempo se reinicia.
         floatingActionButton: GestureDetector(
             onTapDown: (_) => _countdownStart(),
             onTapUp: (_) => _countdownStop(),
@@ -291,5 +300,3 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
             )));
   }
 }
-
-// todo boton silenciar, ajustar y estilo.

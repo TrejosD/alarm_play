@@ -68,7 +68,6 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   late List<int> selectedDays;
   late int playListId;
   bool shufleSound = false;
-  // DateTime? nexTrigger = widget.alarm.nextTrigger;
   final TextEditingController snoozeCtrller = TextEditingController();
   final TextEditingController stopCtrller = TextEditingController();
 
@@ -88,6 +87,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
     syncPlayBackMode();
   }
 
+// con este metodo actualizamos el switch shuffleSound de acuerdo a la Alarm recivida
   void syncPlayBackMode() {
     if (widget.alarm.playbackMode == PlaybackMode.shuffle) {
       shufleSound = true;
@@ -98,8 +98,9 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
 
   @override
   Widget build(BuildContext context) {
+    // mapa de dias vs daysInt para visualizar el UI
     final daysConfig = ref.read(dayRepeatMapProvider);
-
+// selecciona o retira seleccion de dias a repetir
     void toggleDay(int dayValue) {
       if (selectedDays.contains(dayValue)) {
         selectedDays.remove(dayValue);
@@ -111,6 +112,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
       });
     }
 
+// metodo para los valores al Alarm y la crea o edita
     void acceptAlarm() {
       selectedTime ??
           {
@@ -138,6 +140,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
       }
     }
 
+// metodo cambia el tiempo que el usuario desea sileciar su alarma, si no, mantiene el default
     void setNewSnoozeNStopTime(String value, int time, int alarmTime,
         TextEditingController controller, String indicator) {
       if (value.isEmpty) return;
@@ -152,6 +155,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
       }
     }
 
+// stream que muestra todas las playlist creadas
     final playListStream = ref.watch(playlistListProvider);
     bool existPlaylist = false;
 
@@ -174,6 +178,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
           children: [
             GestureDetector(
               onTap: () async {
+                // timepicker para seleccionar la hora de la alarma
                 final TimeOfDay? time = await showTimePicker(
                   context: context,
                   initialTime: selectedTime ??
@@ -191,6 +196,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                   selectedTime = time;
                 });
               },
+              // aca usamos el servicio para cambiar la hora de 24h a 12h
               child: Text(
                 Obtain12hoursService.obtenerFormatoAmPm(selectedTime ??
                     TimeOfDay(
@@ -205,6 +211,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
               'Repetir',
               style: TextStyle(fontSize: 18),
             ),
+            // mapa de objetos seleccionador de dias a repetir
             Wrap(
                 spacing: 2,
                 children: daysConfig.map((day) {
@@ -289,6 +296,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                   onChanged: (value) {
                     setState(() {
                       shufleSound = !shufleSound;
+                      // cambiamos el PlaybackMode de shuffle a sequetial o al reves
                       if (shufleSound) {
                         playBackMode = PlaybackMode.shuffle;
                       } else {
@@ -400,7 +408,6 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                       )
               ],
             )
-            // todo me falta elegir el playbackmode
           ],
         ),
       ),
@@ -413,10 +420,11 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   }
 }
 
+// este inputField, nos permite tener varios input iguales en el UI
 class InputField extends StatelessWidget {
   // controllador
   final TextEditingController controller;
-  // widgerRef
+  // widgetRef
   final AlarmWidget widget;
   // valor int del objeto Alarm
   final int alarmTime;

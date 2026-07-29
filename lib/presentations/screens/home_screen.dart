@@ -18,6 +18,7 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
+  // canal permite manejar cambios con android nativo, fuera de flutter
   static const channel = MethodChannel("alarm_play/alarm_receiver");
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     });
   }
 
+// este metodo, provee navegacion al alarmRiggingScreen, cuando la alarma despierta el app. Background
   Future<void> _checkPendingAlarm(bool wasAlarmExecuted) async {
     if (wasAlarmExecuted) return;
     try {
@@ -53,6 +55,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // stream que contiene todas las alarmas creadas
     final alarmAsync = ref.watch(alarmsProvider);
     return Scaffold(
       appBar: AppBar(title: Text('Alarm Play')),

@@ -18,7 +18,6 @@ class AlarmSchedulerService {
 
   Future<void> scheduleSnoozeAlarm(Alarm alarm, int snoozeTime) async {
     final nextTrigger = alarm.nextTrigger!.add(Duration(minutes: snoozeTime));
-    print('Alarm ${alarm.id} will start on: ${nextTrigger}');
     await AlarmBridgeService.scheduleAlarm(
         alarmId: alarm.id!, triggerTime: nextTrigger);
   }

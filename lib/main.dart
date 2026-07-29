@@ -24,7 +24,6 @@ void main() async {
   @pragma('vm:entry-point')
   void restoreAlarmsEntryPoint() async {
     await initAppDB();
-    // todo probar creando una alarma a una hora X e ingresandola a la DB, para ver si este codigo se esta ejecutando
   }
 
   await initAppDB();
