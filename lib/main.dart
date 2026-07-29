@@ -25,16 +25,6 @@ void main() async {
   void restoreAlarmsEntryPoint() async {
     await initAppDB();
     // todo probar creando una alarma a una hora X e ingresandola a la DB, para ver si este codigo se esta ejecutando
-    // final isar = IsarService.instance;
-    // final alarmScheduler = AlarmSchedulerService();
-    // final restoreService =
-    //     AlarmRestoreService(isar: isar, alarmScheduler: alarmScheduler);
-    // try {
-    //   print('Restore Service Execution');
-    //   restoreService.restoreAllActiveAlarms();
-    // } catch (e) {
-    //   print('Error desde restoreAllActiveAlarms: $e');
-    // }
   }
 
   await initAppDB();

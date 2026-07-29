@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:alarm_play/presentations/screens/home_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
@@ -26,21 +27,31 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
   static const channel = MethodChannel("alarm_play/alarm_receiver");
   int silenciar = 10;
   bool _mostrarContador = false;
+  late int time;
+  Color backgrounColor = Colors.red.shade200;
+  bool isProcessingEnd = false;
+  Timer? _timer;
   late AnimationController _controller;
   @override
   void initState() {
     super.initState();
     WakelockPlus.enable();
     getSnoozeTime();
+    time = 4;
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 2000));
+        vsync: this, duration: const Duration(milliseconds: 1500));
     _startAlarm();
     _countdownStop();
+    startLoop();
   }
 
   @override
   void dispose() {
     WakelockPlus.disable();
+    _controller.removeStatusListener(_animationStatusListener);
+    _controller.dispose();
+    _timer?.cancel();
+    time = 4;
     super.dispose();
   }
 
@@ -69,6 +80,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     setState(() {
       _mostrarContador = false;
       _controller.reset();
+      time = 4;
     });
   }
 
@@ -80,26 +92,40 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
   }
 
   Future<void> _countdownEnd() async {
+    if (isProcessingEnd || !mounted) return;
+    isProcessingEnd = true;
+    _controller.removeStatusListener(_animationStatusListener);
     _countdownStop();
-    final isar = IsarService.instance;
-    final Alarm? alarm = await isar.alarms.get(widget.alarmId);
-    final controller = ref.read(alarmControllerProvider);
-    await ref.read(audioServiceProvider).stop();
-    await ref.read(vibrationServiceProvider).stop();
-    if (alarm == null) return;
-    await controller.stopAlarm(alarm);
-    ref
-        .read(alarmControllerProvider)
-        .scheduleSnoozeAlarm(alarm, alarm.snoozeMinutes);
-    setState(() {});
-    if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-          (route) => false);
+    _timer?.cancel();
+    try {
+      final isar = IsarService.instance;
+      final Alarm? alarm = await isar.alarms.get(widget.alarmId);
+      final controller = ref.read(alarmControllerProvider);
+      if (!mounted) return;
+      await ref.read(audioServiceProvider).stop();
+      await ref.read(vibrationServiceProvider).stop();
+      if (alarm == null) return;
+      await controller.stopAlarm(alarm);
+      try {
+        await channel.invokeMethod('clearPendingAlarm');
+      } catch (e) {
+        print('Error while cleaning pending alarm $e');
+      }
+      await controller.scheduleSnoozeAlarm(alarm, alarm.snoozeMinutes);
+      // setState(() {});
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+            (route) => false);
+      }
+    } catch (e) {
+      print('Error miestras se ejecuta el snooze $e');
+      isProcessingEnd = false;
     }
   }
 
   Future<void> _stopAlarm() async {
+    _timer?.cancel();
     final isar = IsarService.instance;
     Alarm? alarm = await isar.alarms.get(widget.alarmId);
     final controller = ref.read(alarmControllerProvider);
@@ -126,6 +152,38 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     return now;
   }
 
+  void _animationStatusListener(AnimationStatus status) {
+    if (status == AnimationStatus.completed) {
+      _countdownEnd();
+    }
+  }
+
+  int countdownIndicator() {
+    time--;
+    return time;
+  }
+
+// este metodo cambia el color del fondo de pantalla
+  void startLoop() {
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(milliseconds: 210), (timer) {
+      backgrounColor = getBackgroundColor();
+      setState(() {});
+    });
+  }
+
+  Color getBackgroundColor() {
+    List<Color> colors = [
+      Colors.amber,
+      Colors.red.shade200,
+      Colors.blue,
+      Colors.purpleAccent,
+      Colors.greenAccent
+    ];
+    Random random = Random();
+    return colors[random.nextInt(colors.length)];
+  }
+
   Future<void> getSnoozeTime() async {
     final isar = IsarService.instance;
     final Alarm? alarm = await isar.alarms.get(widget.alarmId);
@@ -135,12 +193,9 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
 
   @override
   Widget build(BuildContext context) {
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _countdownEnd();
-      }
-    });
+    _controller.addStatusListener(_animationStatusListener);
     return Scaffold(
+        backgroundColor: backgrounColor,
         body: GestureDetector(
             onVerticalDragUpdate: (details) {
               _stopAlarm();
@@ -166,7 +221,52 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
                   SizedBox(
                     height: 28,
                   ),
-                  Text('Desliza para detener')
+                  Center(
+                    child: Column(children: [
+                      if (_mostrarContador)
+                        Column(children: [
+                          StreamBuilder(
+                              stream:
+                                  Stream.periodic(Duration(milliseconds: 930)),
+                              builder: (context, snapshot) {
+                                final text = countdownIndicator();
+                                return Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.white10,
+                                      borderRadius: BorderRadius.circular(12)),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 6),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text('Manten presionado'),
+                                      Text(
+                                        text.toString(),
+                                        style: TextStyle(
+                                            fontSize: 40,
+                                            fontWeight: FontWeight(600)),
+                                      ),
+                                      SizedBox(
+                                          width: 98,
+                                          child: LinearProgressIndicator(
+                                            controller: _controller,
+                                            backgroundColor:
+                                                Colors.grey.shade300,
+                                          )),
+                                    ],
+                                  ),
+                                );
+                              }),
+                        ]),
+                      SizedBox(
+                        height: 12,
+                      ),
+                      Text(
+                        'Desliza para detener',
+                        style: TextStyle(fontSize: 22),
+                      ),
+                    ]),
+                  )
                 ],
               ),
             )),
@@ -177,17 +277,10 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (_mostrarContador)
-                  SizedBox(
-                      width: 98,
-                      child: LinearProgressIndicator(
-                        controller: _controller,
-                        backgroundColor: Colors.grey.shade300,
-                      )),
-                SizedBox(
-                  height: 8,
-                ),
                 ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.purple.shade300,
+                  ),
                   onPressed: () {},
                   label: Text('Silenciar por: $silenciar'),
                 ),
@@ -199,9 +292,4 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
   }
 }
 
-/*Necesito:
-un reloj con la hra actual en grande.
-metodo detener alarma deslisando sobre la pantalla.
-  acompañar un texto explicando como detener la alarma
-boton para pausar la alarma, metodo on longpress pausa la alarma el tiempo se que haya seteado previamente
- */
+// todo boton silenciar, ajustar y estilo.

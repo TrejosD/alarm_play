@@ -26,19 +26,18 @@ class _AlarmCardState extends ConsumerState<AlarmCard> {
     } else {
       playlist = Playlist()..name = 'Unknown playlist';
     }
-    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-
     findPlaylist(widget.alarm.playlistId);
     selectedDays = widget.alarm.repeatDays;
   }
 
   @override
   Widget build(BuildContext context) {
+    final TextStyle style = TextStyle(fontWeight: FontWeight(600));
     final selectedTime =
         TimeOfDay(hour: widget.alarm.hour, minute: widget.alarm.minute);
     // mapa para hacer correspondecia entre el dia seleccionado y un valor int
@@ -63,7 +62,7 @@ class _AlarmCardState extends ConsumerState<AlarmCard> {
       subtitle: Column(
         children: [
           Row(children: [
-            // actualmente, este wrap, toma siempre la lista de days, y en base que a dias estan seleccionados pinta de color los seleccionados.
+            // actualmente, este wrap, toma siempre la lista de days, y en base a que dias estan seleccionados muestra la seleccion.
             Wrap(
                 spacing: 1,
                 children: selectedDays.map((day) {
@@ -84,21 +83,33 @@ class _AlarmCardState extends ConsumerState<AlarmCard> {
                   );
                 }).toList())
           ]),
-          StreamBuilder(
-            stream: Stream.periodic(const Duration(seconds: 30)),
-            builder: (context, snapshot) {
-              final ringTime = getNextRingTime();
-              return Row(children: [
-                Text('Sonará dentro de: '),
-                Text('${ringTime.hour} : ${ringTime.minute}')
-              ]);
-            },
-          ),
+          widget.alarm.isActive
+              ? StreamBuilder(
+                  stream: Stream.periodic(const Duration(seconds: 30)),
+                  builder: (context, snapshot) {
+                    final ringTime = getNextRingTime();
+                    return Row(children: [
+                      Text(
+                        'Sonará dentro de: ',
+                        style: style,
+                      ),
+                      Text('${ringTime.hour}hrs : ${ringTime.minute} min')
+                    ]);
+                  },
+                )
+              : Row(
+                  children: [
+                    Text(
+                      'Alarma desactivada',
+                      style: style,
+                    ),
+                  ],
+                ),
           Row(
             children: [
               Text(
                 'PlayList: ',
-                style: TextStyle(fontWeight: FontWeight(600)),
+                style: style,
               ),
               Text(playlist.name ?? ''),
             ],
