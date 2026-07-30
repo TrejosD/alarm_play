@@ -14,7 +14,6 @@ class PlaylistCreateScreen extends ConsumerStatefulWidget {
       _PlaylistCreateScreenState();
 }
 
-// todo agrarrarme con esta screen y dejarla bonita
 class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
   late TextEditingController _controller;
   late List<PlayListTrack> _tracks;
@@ -86,10 +85,6 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
     });
   }
 
-  // aca estoy creando una lista, para el UI con el metodo remotrack solo se elimina del UI.
-  // hasta que no se salva no tenemos escritura en DB
-  // creo que necesitaria una sola lista, para mostrar y eliminar del UI. luego el guardado en DB,
-
   Future<void> _save() async {
     final name = _controller.text.trim();
     if (name.isEmpty) {
@@ -133,9 +128,8 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
                 child: TextFormField(
                   controller: _controller,
                   decoration: InputDecoration(
-                      // todo buscar playList en Isar, y guardarla en una variable
                       hintText: widget.playList == null
-                          ? 'Nombra tu play list'
+                          ? 'Nombra tu playlist'
                           : widget.playList!.name.toString()),
                 ),
               ),
@@ -144,36 +138,41 @@ class _PlaylistCreateScreenState extends ConsumerState<PlaylistCreateScreen> {
               ),
               IconButton.filledTonal(
                   onPressed: _pickAudioFiles,
-                  icon: Text('Seleccionar Archivos')),
+                  icon: Padding(
+                    padding: const EdgeInsets.all(5.0),
+                    child: Text('Seleccionar Archivos'),
+                  )),
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemCount: _uiTracks.length,
                 itemBuilder: (context, index) {
                   final track = _uiTracks[index];
-                  return ListTile(
-                    title: Text(track.title ?? 'unknown track'),
-                    trailing: IconButton(
-                        onPressed: () => _removeTrack(index),
-                        icon: Icon(Icons.delete)),
+                  return Container(
+                    padding: EdgeInsets.fromLTRB(0, 2, 0, 4),
+                    child: ListTile(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      tileColor: Colors.grey.shade300,
+                      iconColor: const Color.fromARGB(255, 127, 64, 138),
+                      leading: Icon(Icons.music_note_outlined),
+                      title: Text(track.title ?? 'unknown track'),
+                      trailing: IconButton(
+                          onPressed: () => _removeTrack(index),
+                          icon: Icon(Icons.delete)),
+                    ),
                   );
                 },
+              ),
+              SizedBox(
+                height: 51,
               )
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: controllerState.isLoading ? null : _save
-        // todo necesito que visualmente el usuario tenga la misma forma para crear/editar las playList
-        // final playListId = ref
-        //     .read(playListControllerProvider.notifier)
-        //     .createPlayList(name: _controller.text, tracks: tracks);
-        /*editar playList
-              final success = await .read(playListControllerProvider.notifier)
-              .updatePlayList(playList);
-              */
-        ,
+        onPressed: controllerState.isLoading ? null : _save,
         child: controllerState.isLoading
             ? const CircularProgressIndicator()
             : const Text('Save'),

@@ -15,7 +15,7 @@ class AlarmController {
   AlarmController(this.ref);
 
   AlarmSchedulerService get scheduler => ref.read(alarmSchedulerProvider);
-
+// metodo guarda a alarma en DB y la calendariza
   Future<void> createAlarm(Alarm alarm) async {
     alarm.updateNextTrigger();
     await isar.writeTxn(() async {
@@ -26,6 +26,7 @@ class AlarmController {
     }
   }
 
+// metodo activa / desactiva una alarma, calendariza / descalendariza
   Future<void> toggleAlarm(Alarm alarm) async {
     alarm.isActive = !alarm.isActive;
     if (alarm.isActive) {
@@ -42,6 +43,7 @@ class AlarmController {
     }
   }
 
+// metodo cancela calendarizacion y elimina un alarma
   Future<void> deleteAlarm(int alarmId) async {
     await scheduler.cancelAlarm(alarmId);
     await isar.writeTxn(() async {
@@ -49,14 +51,17 @@ class AlarmController {
     });
   }
 
+// metodo calendariza un alarma
   Future<void> scheduleAlarm(Alarm alarm) async {
     await scheduler.scheduleAlarm(alarm);
   }
 
+// metodo calendariza nuevamente un alarma, pero sin guardar en DB, *solo da una nueva hora para ejecutarse
   Future<void> scheduleSnoozeAlarm(Alarm alarm, int snoozeTime) async {
     await scheduler.scheduleSnoozeAlarm(alarm, snoozeTime);
   }
 
+// metodo detiene un alarma
   Future<void> stopAlarm(Alarm alarm) async {
     await scheduler.cancelAlarm(alarm.id!);
     await scheduler.onAlarmFinished(alarm);

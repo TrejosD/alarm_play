@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// ese mapa contiene los dias y un valor numerico para mostrar en UI, los dias de repeticion de un alarma
 final dayRepeatMapProvider = Provider<List<Map<String, dynamic>>>(
   (ref) {
     final List<Map<String, dynamic>> daysConfig = [

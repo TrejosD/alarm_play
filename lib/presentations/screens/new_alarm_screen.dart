@@ -261,7 +261,11 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                 existPlaylist
                     // aca se separo el boton para ir a crear o editar playList. Para poder crear nuevas aunque ya exista alguna
                     ? SizedBox()
-                    : IconButton(
+                    : IconButton.outlined(
+                        style: IconButton.styleFrom(
+                            side: BorderSide(
+                                color: const Color.fromARGB(255, 70, 7, 82),
+                                width: 1.5)),
                         onPressed: () async {
                           final playList = await ref
                               .read(playlistRepositoryProvider)
@@ -273,18 +277,27 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                             ));
                           }
                         },
-                        icon: Text('Edit')),
+                        icon: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: Text(
+                            'Edit',
+                          ),
+                        )),
                 SizedBox(
                   width: 6,
                 ),
-                IconButton(
+                IconButton.filled(
                     onPressed: () async {
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => PlaylistCreateScreen(),
                       ));
                     },
                     // necesito metodo para crear una nueva, aunque ya exista alguna anterior
-                    icon: Text('New +'))
+                    icon: Text(
+                      'New +',
+                      style: TextStyle(
+                          color: Colors.white, fontWeight: FontWeight.bold),
+                    ))
               ],
             ),
             Row(

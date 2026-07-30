@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:alarm_play/infrastructure/navigation/app_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:isar/isar.dart';
@@ -37,9 +38,9 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     super.initState();
     WakelockPlus.enable();
     getSnoozeTime();
-    time = 4;
+    time = 7;
     _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1500));
+        vsync: this, duration: const Duration(milliseconds: 1200));
     _startAlarm();
     _countdownStop();
     startLoop();
@@ -51,7 +52,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     _controller.removeStatusListener(_animationStatusListener);
     _controller.dispose();
     _timer?.cancel();
-    time = 4;
+    time = 7;
     super.dispose();
   }
 
@@ -80,7 +81,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
     setState(() {
       _mostrarContador = false;
       _controller.reset();
-      time = 4;
+      time = 7;
     });
   }
 
@@ -115,8 +116,10 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
       await controller.scheduleSnoozeAlarm(alarm, alarm.snoozeMinutes);
       // setState(() {});
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+        navigatorKey.currentState?.pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
             (route) => false);
       }
     } catch (e) {
@@ -140,7 +143,7 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
       print('Error limpiando alarm nativa: $e');
     }
     if (mounted) {
-      Navigator.of(context).pushAndRemoveUntil(
+      navigatorKey.currentState?.pushAndRemoveUntil(
           MaterialPageRoute(
             builder: (context) => HomeScreen(),
           ),
@@ -235,9 +238,10 @@ class _AlarmRingingScreenState extends ConsumerState<AlarmRingingScreen>
                           StreamBuilder(
                               stream:
                                   // este stream nos cambia el contador miestrar mantenemos precionado el boton, silenciar alarm
-                                  Stream.periodic(Duration(milliseconds: 930)),
+                                  Stream.periodic(Duration(milliseconds: 520)),
                               builder: (context, snapshot) {
                                 final text = countdownIndicator();
+                                print(text);
                                 return Container(
                                   decoration: BoxDecoration(
                                       color: Colors.white10,

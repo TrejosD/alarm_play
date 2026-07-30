@@ -17,6 +17,7 @@ class PlayListController extends AsyncNotifier<void> {
     _trackStorageFileService = ref.read(trackStorageServiceProvider);
   }
 
+// metodo crea una playlist, y guarda los archivos de audio en memoria local
   Future<int?> createPlayList(
       {required String name, required List<PendingTrack> tracks}) async {
     state = const AsyncLoading();
@@ -39,8 +40,7 @@ class PlayListController extends AsyncNotifier<void> {
     }
   }
 
-  // todo revisar metodo para crear PLayList. *Parece correcto
-
+// metodo edita un playlist, revisa que archivos de audio estan en memoria local, eliminando los innecesario y añadiendo nuevos.
   Future<bool> updatePlayList(
       {required Playlist original,
       required String name,
@@ -53,8 +53,8 @@ class PlayListController extends AsyncNotifier<void> {
       copied = await _trackStorageFileService.copyTracks(newTracks);
       // se crea una unica y nueva lista con ambos archivos 'existentes + nuevos'
       final removed = await _updateRemovedTracks(original, existingTracks);
-      final finalTracks = _buildFinalTrackList(existingTracks, copied);
       // se crea una playList temporal previo a modificar en repositorio. Para evitar modificar la original antes, en caso ocurra un error al modificar la DB
+      final finalTracks = _buildFinalTrackList(existingTracks, copied);
       final updatedPlaylist = Playlist()
         ..id = original.id
         ..name = original.name
@@ -84,12 +84,14 @@ class PlayListController extends AsyncNotifier<void> {
     }
   }
 
+// metodo crea una playlist temporal entre los archivos nuevos y los ya existentes en memoria, previo a guardar en DB. Para luego modificar la DB una sola vez, evitando errores
   List<PlayListTrack> _buildFinalTrackList(
       List<PlayListTrack> existingTracks, List<PlayListTrack> copiedTracks) {
     final tracks = [...existingTracks, ...copiedTracks];
     return tracks;
   }
 
+// este metodo crea una lista de archivos que necesitamos eliminar de la memoria local. Si todo es correcto, se eliminan estos archivos al final. *Asi evitamos eliminar archivos desde el inicio, y un posible error nos detiene el metodo, y estos archivos ya fueron eliminados.
   Future<List<PlayListTrack>> _updateRemovedTracks(
       Playlist original, List<PlayListTrack> existingTracks) async {
     // tomamos todos los archivos de audio de la lista original
@@ -102,23 +104,13 @@ class PlayListController extends AsyncNotifier<void> {
     return removedTracks;
   }
 
-  // Future<bool> updatePlayList(Playlist playList) async {
-  //   state = const AsyncLoading();
-  //   try {
-  //     await _repository.update(playList);
-  //     state = AsyncData(null);
-  //     return true;
-  //   } catch (error, stackTrace) {
-  //     state = AsyncError(error, stackTrace);
-  //     return false;
-  //   }
-  // }
-
+// metodo elimina una playList del DB junto con sus archivos en memoria local
   Future<bool> deletePlayList(int playListId) async {
     state = const AsyncLoading();
-
+    final playlist = await _repository.getById(playListId);
     try {
       await _repository.delete(playListId);
+      await _trackStorageFileService.deletePlaylistFiles(playlist!);
       state = const AsyncData(null);
       return true;
     } catch (error, stackTrace) {

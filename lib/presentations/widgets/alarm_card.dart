@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../data/entities/entities.dart';
 
+// este widget creamos la tarjeta para mostrar cada alarma creada
 class AlarmCard extends ConsumerStatefulWidget {
   final Alarm alarm;
   const AlarmCard({super.key, required this.alarm});
@@ -26,6 +27,7 @@ class _AlarmCardState extends ConsumerState<AlarmCard> {
     } else {
       playlist = Playlist()..name = 'Unknown playlist';
     }
+    setState(() {});
   }
 
   @override

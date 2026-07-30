@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// este widget se muestra en dispositivos Xiaomi, para verificar los permisos necesarios para el correcto funcionamiento del app
 class XioamiPermissionUserHandler {
   static void showXiaomiPermissionDialog(
       BuildContext context, SharedPreferences prefs) {

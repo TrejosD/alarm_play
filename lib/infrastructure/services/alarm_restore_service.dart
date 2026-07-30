@@ -12,9 +12,7 @@ class AlarmRestoreService {
   AlarmRestoreService({required this.isar, required this.alarmScheduler});
 
   Future<void> restoreAllActiveAlarms() async {
-    print('Inicio Restore Service');
     final alarms = isar.alarms.filter().isActiveEqualTo(true).findAll();
-// todo revisar este metodo, ya que fue hecho para LocalNotification. *-* Actualizarlo
     for (final alarm in await alarms) {
       try {
         // recalcular siempre

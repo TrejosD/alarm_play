@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// este servicio nos permite convertir horas formato 24h a 12h
 class Obtain12hoursService {
   static String obtenerFormatoAmPm(TimeOfDay time) {
     final int horaFormateada = time.hour > 12 ? time.hour - 12 : time.hour;

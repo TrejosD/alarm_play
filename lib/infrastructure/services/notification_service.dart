@@ -8,6 +8,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// este servicio nos permte manejar las notificaciones
 class NotificationService {
   final FlutterLocalNotificationsPlugin plugin;
   static const _channel = MethodChannel('alarm_play/xiaomi');
@@ -32,13 +33,13 @@ class NotificationService {
         });
   }
 
+// metodo revisa si tenemos permiso para recibir notificationes
   Future<void> checkExactAlarmPermission(BuildContext context) async {
     if (!Platform.isAndroid) return;
     var status = await Permission.scheduleExactAlarm.status;
     if (status.isDenied) {
       await Permission.scheduleExactAlarm.request();
     }
-    print('Permission Exact Notification ${status.toString()}');
 
     final deviceInfo = DeviceInfoPlugin();
     final androidInfo = await deviceInfo.androidInfo;
@@ -58,6 +59,7 @@ class NotificationService {
     }
   }
 
+// metodo revisa los permisos necesarios para el app, en dispositivos Xiaomi
   Future<void> checkXiaomiPermissions() async {
     try {
       await _channel.invokeMethod('xiaomiPermissionRequest');
@@ -65,6 +67,4 @@ class NotificationService {
       print("Error en el canal nativo Xiaomi: ${e.message}");
     }
   }
-
-  Future<void> showNotification() async {}
 }

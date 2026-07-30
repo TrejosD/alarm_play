@@ -6,5 +6,4 @@ export 'audio_service.dart';
 export 'just_audio_service.dart';
 export 'notification_service.dart';
 export 'obtain_12hours_service.dart';
-export 'time_zone_service.dart';
 export 'vibration_service.dart';

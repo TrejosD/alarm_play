@@ -10,7 +10,7 @@ void main() async {
   Future<void> initAppDB() async {
     WidgetsFlutterBinding.ensureInitialized();
     // metodo inicia el TImeZoneService
-    await TimeZoneService.init();
+    // await TimeZoneService.init();
     // metodo inicia el ISarService
     await IsarService.init();
     // Metodo inicia el JustAudio para sonido en background

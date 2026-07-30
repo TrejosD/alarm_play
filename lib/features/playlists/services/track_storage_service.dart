@@ -77,6 +77,7 @@ class TrackStorageFileService {
     }
   }
 
+// metodo permite eliminar los traks de una playlist. Desde una lista de tracks
   Future<void> deleteTracks(List<PlayListTrack> tracks) async {
     for (final track in tracks) {
       await deleteTrack(track);
