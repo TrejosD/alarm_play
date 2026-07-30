@@ -1,4 +1,5 @@
 import 'package:alarm_play/presentations/providers/days_repeat_map_provider.dart';
+import 'package:alarm_play/presentations/widgets/delete_playlist_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../infrastructure/controllers/controllers.dart';
@@ -235,9 +236,10 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                 playListStream.when(
                     data: (playlist) {
                       if (playlist.isEmpty) {
-                        existPlaylist = true;
+                        existPlaylist = false;
                         return Text('Aun no tienes playlist creadas');
                       }
+                      existPlaylist = true;
                       return DropdownMenu(
                           initialSelection: playListId,
                           onSelected: (value) {
@@ -247,7 +249,21 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                           },
                           dropdownMenuEntries: playlist.map((item) {
                             return DropdownMenuEntry(
-                                value: item.id, label: item.name!);
+                                // el laelWidget requiere un widget, por lo que lo utilizamos para tener el longPress que necesito para el metodo de eliminar playlist
+                                labelWidget: InkWell(
+                                  onLongPress: () => showDialog(
+                                    context: context,
+                                    builder: (context) =>
+                                        DeletePlaylistDialog(playlist: item),
+                                  ),
+                                  child: Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.symmetric(
+                                          vertical: 6, horizontal: 2),
+                                      child: Text(item.name!)),
+                                ),
+                                value: item.id,
+                                label: item.name!);
                           }).toList());
                     },
                     error: (e, _) {
@@ -260,8 +276,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                 Spacer(),
                 existPlaylist
                     // aca se separo el boton para ir a crear o editar playList. Para poder crear nuevas aunque ya exista alguna
-                    ? SizedBox()
-                    : IconButton.outlined(
+                    ? IconButton.outlined(
                         style: IconButton.styleFrom(
                             side: BorderSide(
                                 color: const Color.fromARGB(255, 70, 7, 82),
@@ -282,7 +297,8 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                           child: Text(
                             'Edit',
                           ),
-                        )),
+                        ))
+                    : SizedBox(),
                 SizedBox(
                   width: 6,
                 ),
