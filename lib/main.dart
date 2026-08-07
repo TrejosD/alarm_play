@@ -7,26 +7,15 @@ import 'package:alarm_play/infrastructure/db/isar_service.dart';
 import 'presentations/screens/screens.dart';
 
 void main() async {
-  Future<void> initAppDB() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    // metodo inicia el TImeZoneService
-    // await TimeZoneService.init();
-    // metodo inicia el ISarService
-    await IsarService.init();
-    // Metodo inicia el JustAudio para sonido en background
-    await JustAudioBackground.init(
-      androidNotificationChannelId: 'com.example.alarm_play',
-      androidNotificationChannelName: 'alarm_audio',
-      androidNotificationOngoing: true,
-    );
-  }
-
-  @pragma('vm:entry-point')
-  void restoreAlarmsEntryPoint() async {
-    await initAppDB();
-  }
-
-  await initAppDB();
+  WidgetsFlutterBinding.ensureInitialized();
+  // metodo inicia el ISarService
+  await IsarService.init();
+  // Metodo inicia el JustAudio para sonido en background
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.diegotrejos.AlarmPlay',
+    androidNotificationChannelName: 'alarm_audio',
+    androidNotificationOngoing: true,
+  );
 
 // Listener que al escuchar una alarma ejecuta la navegacion
   final alarmEventService = AlarmEventService();

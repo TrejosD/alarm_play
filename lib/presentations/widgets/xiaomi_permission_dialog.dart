@@ -98,7 +98,7 @@ class XioamiPermissionUserHandler {
         action: 'miui.intent.action.APP_PERM_EDITOR',
         arguments: <String, dynamic>{
           // Pasa el paquete del app, para que se abra directamente en nuestra app
-          'extra_pkgname': 'com.example.alarm_play'
+          'extra_pkgname': 'com.diegotrejos.AlarmPlay'
         },
       );
       await intent.launch();

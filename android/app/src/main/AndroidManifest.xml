@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="com.diegotrejos.AlarmPlay"
   xmlns:tools="http://schemas.android.com/tools">
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
     <application
-        android:label="alarm_play"
+        android:label="AlarmPlay"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity
@@ -61,9 +61,13 @@
         android:exported="false"/>
         <receiver android:name=".AlarmBootReceiver"
           android:enabled="true"
-          android:exported="true">
+          android:exported="true"
+          android:directBootAware="true">
           <intent-filter>
           <action android:name="android.intent.action.BOOT_COMPLETED"/>
+          <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+          <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+          <category android:name="android.intent.category.DEFAULT" />
           </intent-filter>
         </receiver>
         <service android:name="com.ryanheise.audioservice.AudioService"

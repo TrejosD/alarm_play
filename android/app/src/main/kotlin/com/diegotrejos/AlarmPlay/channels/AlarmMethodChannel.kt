@@ -1,12 +1,13 @@
-package com.example.alarm_play.channels
+package com.diegotrejos.AlarmPlay.channels
 
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
-import com.example.alarm_play.alarm.AlarmReceiver
+import com.diegotrejos.AlarmPlay.alarm.AlarmReceiver
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import android.content.Context
+import android.os.Build
 
 class AlarmMethodChannel(
     private val context:Context):MethodChannel.MethodCallHandler {
@@ -80,6 +81,14 @@ class AlarmMethodChannel(
             triggerMillis,
             pendingIntent
         )
+
+        val safeContext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        context.createDeviceProtectedStorageContext()
+        } else {
+            context
+        }
+        val prefs = safeContext.getSharedPreferences("active_alarms_prefs", Context.MODE_PRIVATE)
+        prefs.edit().putLong("alarm_$alarmId", triggerMillis).apply()
         android.util.Log.d(
             "ALARM_APP",
             "Alarm Scheduled: $alarmId"
@@ -106,7 +115,13 @@ class AlarmMethodChannel(
         alarmManager.cancel(
             pendingIntent
         )
-
+        val safeContext = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        context.createDeviceProtectedStorageContext()
+        } else {
+        context
+        }
+        val prefs = safeContext.getSharedPreferences("active_alarms_prefs", Context.MODE_PRIVATE)
+        prefs.edit().remove("alarm_$alarmId").apply()
         android.util.Log.d(
             "ALARM_APP",
             "Alarm cancelled $alarmId"

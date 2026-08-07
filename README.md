@@ -12,10 +12,31 @@ Integrasion con Spotify y YouTube music coming soon.
 
 ## Desarrollo
 
+### Cambios en el splash Screen
+
+```
+dart run flutter_native_splash:create --path=C:/Users/Diego/Documents/apps/alarm_play/flutter_native_splash.yaml
+```
+
 ### Cambios en local-DB
 
 ```
 dart run build_runner build
+```
+
+### Cambiar el nombre del app
+
+- Utilizando el rename CLI en powerchell. - Bash no funciona
+- Comando para buscar el nombre actual
+
+```
+rename getAppName
+```
+
+- Comando para cambiar el nombre del app.
+
+```
+rename setAppName --targets ios,android --value "New App Name"
 ```
 
 ### Observaciones

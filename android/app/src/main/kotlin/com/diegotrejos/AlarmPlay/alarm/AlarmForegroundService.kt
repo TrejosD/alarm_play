@@ -1,7 +1,7 @@
-package com.example.alarm_play.alarm
+package com.diegotrejos.AlarmPlay.alarm
 
-import com.example.alarm_play.channels.AlarmEventChannel
-import com.example.alarm_play.MainActivity
+import com.diegotrejos.AlarmPlay.channels.AlarmEventChannel
+import com.diegotrejos.AlarmPlay.MainActivity
 import android.app.Notification
 import androidx.core.app.NotificationCompat
 import android.app.NotificationChannel

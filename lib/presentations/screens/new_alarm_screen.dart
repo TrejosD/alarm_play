@@ -75,7 +75,10 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
   @override
   void initState() {
     super.initState();
-    selectedDays = widget.alarm.repeatDays;
+    selectedDays = [];
+    introduceSelectedDays();
+    selectedTime =
+        TimeOfDay(hour: widget.alarm.hour, minute: widget.alarm.minute);
     vibrar = widget.alarm.vibrateEnabled;
     playOnce = widget.alarm.playOnce;
     autoStop = widget.alarm.autoStop;
@@ -97,6 +100,13 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
     }
   }
 
+  void introduceSelectedDays() {
+    final days = widget.alarm.repeatDays;
+    for (final day in days) {
+      selectedDays.add(day);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // mapa de dias vs daysInt para visualizar el UI
@@ -115,11 +125,6 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
 
 // metodo para los valores al Alarm y la crea o edita
     void acceptAlarm() {
-      selectedTime ??
-          {
-            selectedTime = TimeOfDay(
-                hour: DateTime.now().hour, minute: DateTime.now().minute)
-          };
       widget.alarm.hour = selectedTime!.hour;
       widget.alarm.minute = selectedTime!.minute;
       widget.alarm.ascendingVolume = ascendingVolume;
@@ -182,9 +187,7 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                 // timepicker para seleccionar la hora de la alarma
                 final TimeOfDay? time = await showTimePicker(
                   context: context,
-                  initialTime: selectedTime ??
-                      TimeOfDay(
-                          hour: widget.alarm.hour, minute: widget.alarm.minute),
+                  initialTime: selectedTime!,
                   initialEntryMode: TimePickerEntryMode.dial,
                   builder: (context, child) {
                     return MediaQuery(
@@ -249,19 +252,19 @@ class _AlarmWidgetState extends ConsumerState<AlarmWidget> {
                           },
                           dropdownMenuEntries: playlist.map((item) {
                             return DropdownMenuEntry(
-                                // el laelWidget requiere un widget, por lo que lo utilizamos para tener el longPress que necesito para el metodo de eliminar playlist
-                                labelWidget: InkWell(
-                                  onLongPress: () => showDialog(
-                                    context: context,
-                                    builder: (context) =>
-                                        DeletePlaylistDialog(playlist: item),
-                                  ),
-                                  child: Container(
-                                      width: double.infinity,
-                                      padding: EdgeInsets.symmetric(
-                                          vertical: 6, horizontal: 2),
-                                      child: Text(item.name!)),
+                                trailingIcon: IconButton(
+                                  onPressed: () => showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          DeletePlaylistDialog(playlist: item)),
+                                  icon: Icon(Icons.delete_forever_outlined),
                                 ),
+                                // el laelWidget requiere un widget, por lo que lo utilizamos para tener el longPress que necesito para el metodo de eliminar playlist
+                                labelWidget: Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 6, horizontal: 2),
+                                    child: Text(item.name!)),
                                 value: item.id,
                                 label: item.name!);
                           }).toList());

@@ -1,4 +1,4 @@
-package com.example.alarm_play.alarm
+package com.diegotrejos.AlarmPlay.alarm
 
 import android.content.BroadcastReceiver
 import android.content.Context

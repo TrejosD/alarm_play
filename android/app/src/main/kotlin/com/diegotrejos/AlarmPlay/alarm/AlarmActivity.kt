@@ -1,4 +1,4 @@
-package com.example.alarm_play.alarm
+package com.diegotrejos.AlarmPlay.alarm
 
 import android.app.Activity
 import android.os.Build
@@ -7,7 +7,7 @@ import android.util.Log
 import android.view.WindowManager
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
-import com.example.alarm_play.MainActivity
+import com.diegotrejos.AlarmPlay.MainActivity
 
 class AlarmActivity : AppCompatActivity(){
 

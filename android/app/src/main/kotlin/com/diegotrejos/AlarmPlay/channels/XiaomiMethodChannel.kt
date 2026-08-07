@@ -1,4 +1,4 @@
-package com.example.alarm_play.channels
+package com.diegotrejos.AlarmPlay.channels
 
 
 import android.app.PendingIntent

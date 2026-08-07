@@ -17,28 +17,30 @@ class AlarmCard extends ConsumerStatefulWidget {
 }
 
 class _AlarmCardState extends ConsumerState<AlarmCard> {
-  Playlist playlist = Playlist();
   List<int> selectedDays = [];
+  String playlistName = 'Unknown playlist';
   // metodo encuentra la playList, basado en su ID
-  Future<void> findPlaylist(int id) async {
+  Future<void> updatePlaylistName(int id) async {
     final newPlaylist = await ref.read(playlistRepositoryProvider).getById(id);
     if (newPlaylist != null) {
-      playlist = newPlaylist;
-    } else {
-      playlist = Playlist()..name = 'Unknown playlist';
+      playlistName = newPlaylist.name!;
     }
-    setState(() {});
   }
 
   @override
   void initState() {
     super.initState();
-    findPlaylist(widget.alarm.playlistId);
+    updateUI();
+  }
+
+  void updateUI() {
+    updatePlaylistName(widget.alarm.playlistId);
     selectedDays = widget.alarm.repeatDays;
   }
 
   @override
   Widget build(BuildContext context) {
+    updateUI();
     final TextStyle style = TextStyle(fontWeight: FontWeight(600));
     final selectedTime =
         TimeOfDay(hour: widget.alarm.hour, minute: widget.alarm.minute);
@@ -113,7 +115,13 @@ class _AlarmCardState extends ConsumerState<AlarmCard> {
                 'PlayList: ',
                 style: style,
               ),
-              Text(playlist.name ?? ''),
+              StreamBuilder(
+                stream: Stream.periodic(Duration(seconds: 30)),
+                builder: (context, snapshot) {
+                  updatePlaylistName(widget.alarm.id!);
+                  return Text(playlistName);
+                },
+              )
             ],
           )
         ],
